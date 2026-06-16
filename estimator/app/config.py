@@ -33,9 +33,7 @@ class Settings(BaseSettings):
     def validate_at_least_one_api_key(self) -> "Settings":
         """LiteLLM may try either provider via fallback, so we require at least one key."""
         if not self.OPENAI_API_KEY and not self.ANTHROPIC_API_KEY:
-            raise ValueError(
-                "At least one of OPENAI_API_KEY or ANTHROPIC_API_KEY must be set"
-            )
+            raise ValueError("At least one of OPENAI_API_KEY or ANTHROPIC_API_KEY must be set")
         return self
 
 

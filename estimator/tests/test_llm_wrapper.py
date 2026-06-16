@@ -8,7 +8,9 @@ from app.services.cache import EstimationCache
 from app.services.llm_wrapper import LLMWrapper, _estimate_cost
 
 
-def _fake_completion(model: str, content: str = "the answer", input_tokens: int = 100, output_tokens: int = 50):
+def _fake_completion(
+    model: str, content: str = "the answer", input_tokens: int = 100, output_tokens: int = 50
+):
     """Build a SimpleNamespace shaped like a litellm.ModelResponse."""
     return SimpleNamespace(
         model=model,
@@ -82,8 +84,10 @@ def test_complete_returns_normalised_dict_and_caches(wrapper: LLMWrapper) -> Non
 
 def test_complete_with_model_override_bypasses_router(wrapper: LLMWrapper) -> None:
     fake = _fake_completion(model="gpt-4o", content="overridden")
-    with patch("app.services.llm_wrapper.litellm.completion", return_value=fake) as direct, \
-        patch.object(wrapper.router, "completion") as router_call:
+    with (
+        patch("app.services.llm_wrapper.litellm.completion", return_value=fake) as direct,
+        patch.object(wrapper.router, "completion") as router_call,
+    ):
         result = wrapper.complete(
             system_prompt="sys",
             user_message="usr",

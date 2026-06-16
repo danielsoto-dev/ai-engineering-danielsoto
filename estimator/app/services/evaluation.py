@@ -77,7 +77,6 @@ def evaluate_estimation_structure(text: str, finish_reason: str) -> StructureChe
         cost_match = abs(sum_cost - declared_total_cost) / declared_total_cost <= 0.02
     else:
         cost_match = None
-    
 
     finish_reason_ok = finish_reason in _OK_FINISH_REASONS
 
