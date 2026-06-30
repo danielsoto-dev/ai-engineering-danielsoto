@@ -37,6 +37,25 @@ class Settings(BaseSettings):
 
     ESTIMATOR_API_BASE_URL: str = "http://localhost:8000"
 
+    # --- Session 5 fields (conversational memory + compression + tier) ---
+    # MAX_CONVERSATION_TURNS counts user+assistant pairs; the system prompt is
+    # always preserved on top of the sliding window.
+    MAX_CONVERSATION_TURNS: int = 6
+    # Hard cap per extracted attachment (chars) to protect the context window.
+    MAX_ATTACHMENT_CHARS: int = 60_000
+    # The metadata extractor runs once per turn; a small/cheap model is enough.
+    METADATA_EXTRACTOR_MODEL: str = "gpt-4o-mini"
+    # Anchor detector: "heuristic" (regex) or "llm" (binary classifier).
+    ANCHOR_DETECTION_MODE: Literal["heuristic", "llm"] = "heuristic"
+    # Cheap model used by the cumulative summarizer (history compression).
+    COMPRESSION_MODEL: str = "gpt-4o-mini"
+    # Conversational prompt version used by estimate_conversational (v2/v3).
+    CONVERSATIONAL_PROMPT_VERSION: str = "v3"
+    # Critic model (read-only auditor; cheap is fine).
+    CRITIC_MODEL: str = "gpt-4o-mini"
+    # Max iterations the Boss can drive (1 actor + 1 critic call each).
+    BOSS_MAX_ITERATIONS: int = 3
+
     @model_validator(mode="after")
     def validate_at_least_one_api_key(self) -> "Settings":
         """LiteLLM may try either provider via fallback, so we require at least one key."""
