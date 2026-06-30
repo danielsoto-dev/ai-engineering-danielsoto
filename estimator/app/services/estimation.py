@@ -49,7 +49,7 @@ from app.services.critic import Critic
 from app.services.llm_wrapper import LLMWrapper
 from app.sessions.compression import apply_compression
 from app.sessions.metadata_extractor import update_metadata
-from app.sessions.models import Session
+from app.sessions.models import Session, TurnObservation
 from app.sessions.tier_resolver import Tier, resolve_tier
 
 log = structlog.get_logger()
@@ -261,6 +261,33 @@ class EstimationService:
             llm_wrapper=self.llm_wrapper,
             model=self.metadata_extractor_model,
         )
+
+        # 8. Session 6 (Block 1): one aggregated telemetry event per turn.
+        #    Most fields already travelled through this method in separate
+        #    logs; collapsing them into a single `turn_observed` lets the
+        #    stress runner build a CSV row in one pass (and correlate, e.g.,
+        #    messages_in_window vs cost_usd without reconciling timestamps).
+        #    The conversational path never hits the caches, so cache_hit_kind
+        #    is always "none". Token/cost come from `meta` when the wrapper
+        #    surfaces usage; structured Instructor calls may report 0.
+        session.turn_count += 1
+        observation = TurnObservation(
+            turn_index=session.turn_count,
+            session_id=session.session_id,
+            enriched_transcript_chars=len(transcript),
+            attachments_total_chars=0,  # service sees only the enriched blob; runner knows the split
+            messages_in_window=len(session.history.messages),
+            anchors_count=len(session.history.anchors),
+            summary_chars=len(session.history.summary or ""),
+            tokens_in=int(meta.get("tokens_in", 0)),
+            tokens_out=int(meta.get("tokens_out", 0)),
+            cost_usd=float(meta.get("cost_usd", 0.0)),
+            latency_ms=int(meta.get("latency_ms", 0)),
+            cache_hit_kind="none",
+            last_resolved_tier=resolved_tier.value,
+        )
+        session.last_turn = observation
+        log.info("turn_observed", **observation.model_dump())
 
         return EstimationResponse(
             result=result,

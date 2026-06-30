@@ -153,6 +153,27 @@ class ProjectMetadata(BaseModel):
         )
 
 
+class TurnObservation(BaseModel):
+    """Per-turn telemetry emitted by ``estimate_conversational`` (Session 6
+    stress test, Block 1). One aggregated record per turn so the stress runner
+    can pull a full CSV row from ``GET /sessions/{id}`` without parsing logs.
+    """
+
+    turn_index: int = Field(ge=1, description="1-based, counted within the session.")
+    session_id: str
+    enriched_transcript_chars: int = 0
+    attachments_total_chars: int = 0
+    messages_in_window: int = 0
+    anchors_count: int = 0
+    summary_chars: int = 0
+    tokens_in: int = 0
+    tokens_out: int = 0
+    cost_usd: float = 0.0
+    latency_ms: int = 0
+    cache_hit_kind: str = "none"  # "none" | "exact" | "semantic"
+    last_resolved_tier: str | None = None
+
+
 class Session(BaseModel):
     """A conversational estimation session.
 
@@ -162,7 +183,8 @@ class Session(BaseModel):
 
     ``last_resolved_tier`` and ``last_tier_rule`` cache the most recent tier
     resolution so the GET /sessions/{id} endpoint can show the side panel
-    information without re-running the resolver.
+    information without re-running the resolver. ``turn_count`` /
+    ``last_turn`` back the Session 6 stress telemetry.
     """
 
     session_id: str = Field(default_factory=lambda: str(uuid4()))
@@ -171,3 +193,5 @@ class Session(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_resolved_tier: str | None = None
     last_tier_rule: str | None = None
+    turn_count: int = 0
+    last_turn: TurnObservation | None = None

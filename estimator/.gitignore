@@ -26,3 +26,7 @@ venv/
 
 # Session guides / docs
 docs/
+
+# Session 6 stress test artifacts (regenerated)
+evals/stress/fixtures/generated/
+evals/stress/results.csv

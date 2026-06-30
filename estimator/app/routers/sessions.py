@@ -41,7 +41,7 @@ from app.schemas.estimation import (
     ProjectType,
 )
 from app.services.estimation import EstimationService
-from app.sessions.models import ProjectMetadata
+from app.sessions.models import ProjectMetadata, TurnObservation
 from app.sessions.store import SessionNotFoundError, SessionStore
 from app.sessions.tier_resolver import Tier
 
@@ -63,6 +63,9 @@ class SessionInfoResponse(BaseModel):
     summary_chars: int = 0
     last_resolved_tier: str | None = None
     last_tier_rule: str | None = None
+    # Session 6 stress test: the last turn's aggregated telemetry, so the
+    # runner reads a CSV row over HTTP instead of parsing logs.
+    last_turn: TurnObservation | None = None
 
 
 @router.post("", response_model=CreateSessionResponse, status_code=201)
@@ -92,6 +95,7 @@ def get_session(
         summary_chars=len(session.history.summary or ""),
         last_resolved_tier=session.last_resolved_tier,
         last_tier_rule=session.last_tier_rule,
+        last_turn=session.last_turn,
     )
 
 
