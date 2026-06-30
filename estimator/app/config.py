@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "DEBUG"
 
     # --- Session 3 fields (LiteLLM wrapper, Redis cache, Streamlit transport) ---
-    PRIMARY_MODEL: str = "gpt-4o-mini"
+    PRIMARY_MODEL: str = "gpt-4o"
     FALLBACK_MODEL: str = "claude-haiku-4-5-20251001"
     LLM_TIMEOUT: int = 30
     LLM_RETRIES: int = 2
