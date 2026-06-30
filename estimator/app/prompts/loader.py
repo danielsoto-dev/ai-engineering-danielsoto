@@ -11,7 +11,13 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from app.schemas.estimation import EstimationRequest, EstimationResult
+from app.schemas.estimation import (
+    DetailLevel,
+    EstimationRequest,
+    EstimationResult,
+    OutputFormat,
+    ProjectType,
+)
 from app.sessions.models import ProjectMetadata
 
 _BASE_DIR = Path(__file__).resolve().parent
@@ -47,6 +53,39 @@ def render_estimation_prompt(
     return system, user
 
 
+def render_conversational_prompt(
+    *,
+    description: str,
+    project_type: ProjectType,
+    detail_level: DetailLevel,
+    output_format: OutputFormat,
+    metadata: ProjectMetadata,
+    version: str = "v2",
+    tier: object | None = None,
+    critic_feedback: object | None = None,
+) -> tuple[str, str]:
+    """Render the conversational system/user prompts.
+
+    v2 (Session 5 exercise) carries only ``<project_metadata>``.
+    v3 (Session 5 live) adds the ``<audience>`` block driven by ``tier`` and
+    the optional ``<critic_feedback>`` block consumed by the Boss
+    orchestrator. Both blocks degrade gracefully if their inputs are missing.
+    """
+    context = {
+        "description": description,
+        "project_type": project_type.value,
+        "detail_level": detail_level.value,
+        "output_format": output_format.value,
+        "metadata": metadata,
+        "metadata_is_empty": metadata.is_empty(),
+        "tier": tier.value if hasattr(tier, "value") else (tier or "default"),
+        "critic_feedback": critic_feedback,
+    }
+    system = _env.get_template(f"estimation/{version}/system.j2").render(**context)
+    user = _env.get_template(f"estimation/{version}/user.j2").render(**context)
+    return system, user
+
+
 def render_conversation_summary_prompt(
     *,
     previous_summary: str | None,
@@ -63,6 +102,29 @@ def render_conversation_summary_prompt(
     }
     system = _env.get_template(f"conversation_summary/{version}/system.j2").render(**context)
     user = _env.get_template(f"conversation_summary/{version}/user.j2").render(**context)
+    return system, user
+
+
+def render_critic_prompt(
+    *,
+    transcript: str,
+    metadata: ProjectMetadata,
+    tier: object,
+    result: EstimationResult,
+    version: str = "v1",
+) -> tuple[str, str]:
+    """Render the Critic prompts (Session 5 live).
+
+    ``tier`` can be a ``Tier`` enum or its string value; both are accepted.
+    """
+    context = {
+        "transcript": transcript,
+        "metadata": metadata,
+        "tier": tier.value if hasattr(tier, "value") else str(tier),
+        "result": result,
+    }
+    system = _env.get_template(f"critic/{version}/system.j2").render(**context)
+    user = _env.get_template(f"critic/{version}/user.j2").render(**context)
     return system, user
 
 

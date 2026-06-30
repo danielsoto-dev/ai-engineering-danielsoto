@@ -9,7 +9,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
 from app.config import get_settings  # noqa: E402
-from app.routers import estimations  # noqa: E402
+from app.routers import estimations, sessions  # noqa: E402
 
 
 def configure_logging() -> None:
@@ -66,6 +66,7 @@ app.add_middleware(
 )
 
 app.include_router(estimations.router)
+app.include_router(sessions.router)
 
 
 @app.get("/health")

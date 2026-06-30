@@ -15,8 +15,18 @@ def _canned_result() -> EstimationResult:
         summary="MVP CRM build for the sales team.",
         confidence_pct=70,
         phases=[
-            {"name": "Discovery", "duration_weeks": 1, "cost_eur": 5_000, "summary": "Workshops + tech spike."},
-            {"name": "Build", "duration_weeks": 5, "cost_eur": 20_000, "summary": "Core CRM features."},
+            {
+                "name": "Discovery",
+                "duration_weeks": 1,
+                "cost_eur": 5_000,
+                "summary": "Workshops + tech spike.",
+            },
+            {
+                "name": "Build",
+                "duration_weeks": 5,
+                "cost_eur": 20_000,
+                "summary": "Core CRM features.",
+            },
         ],
         total_duration_weeks=6,
         total_cost_eur=25_000,
