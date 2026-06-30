@@ -1,0 +1,29 @@
+# Redis Stack only — for running the app locally with `uv` while Redis lives
+# in Docker. Redis Stack (not plain redis:7) ships the RediSearch module the
+# semantic cache needs for vector queries.
+#
+#   docker compose -f docker-compose.redis.yml up -d
+#   uv run uvicorn app.main:app --reload
+#   uv run streamlit run streamlit_app.py
+#
+# RedisInsight UI is on http://localhost:8001.
+
+services:
+  redis:
+    image: redis/redis-stack:7.4.0-v0
+    container_name: estimator-redis
+    ports:
+      - "6379:6379"  # Redis
+      # RedisInsight UI is available inside the container on 8001; map it if the
+      # host port is free:  - "8001:8001"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  redis_data:

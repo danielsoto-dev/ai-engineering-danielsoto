@@ -1,14 +1,15 @@
-import structlog
-from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 
-from pathlib import Path
+load_dotenv()  # load .env into os.environ before config / openai SDK read it
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+import structlog  # noqa: E402
+from contextlib import asynccontextmanager  # noqa: E402
 
-from app.config import get_settings
-from app.routers import estimations
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+
+from app.config import get_settings  # noqa: E402
+from app.routers import estimations  # noqa: E402
 
 
 def configure_logging() -> None:
@@ -48,8 +49,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Software Estimation CAG Service",
-    description="AI-powered software estimation service using Cache Augmented Generation architecture",
+    title="Software Estimation Service",
+    description="AI-powered software estimation service with typed input and versioned prompts",
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -65,10 +66,6 @@ app.add_middleware(
 )
 
 app.include_router(estimations.router)
-
-_STATIC_DIR = Path(__file__).resolve().parent / "static"
-if _STATIC_DIR.is_dir():
-    app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
 
 @app.get("/health")
