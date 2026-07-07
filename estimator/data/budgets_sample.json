@@ -1,0 +1,98 @@
+[
+  {
+    "budget_id": "BUD-2024-014",
+    "client_metadata": {
+      "name": "FintechCorp",
+      "sector": "finance",
+      "country": "ES"
+    },
+    "project_summary": "Mobile banking API with OAuth 2.0 authentication and PSD2 compliance",
+    "main_technology": "ruby_on_rails",
+    "year": 2024,
+    "total_estimated_hours": 480,
+    "components": [
+      {
+        "component_id": "AUTH-001",
+        "name": "OAuth 2.0 authentication backend",
+        "description": "Implementation of OAuth 2.0 flows (authorization code, refresh token) with JWT-based session management, multi-tenant token isolation, and rate limiting per client.",
+        "tech_stack": ["ruby_on_rails", "postgresql", "redis"],
+        "estimated_hours": 120,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "PSD2-002",
+        "name": "PSD2 compliance module",
+        "description": "Strong customer authentication (SCA) flows and consent management required for PSD2 regulatory compliance in the EU.",
+        "tech_stack": ["ruby_on_rails", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "high",
+        "dependencies": ["AUTH-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-021",
+    "client_metadata": {
+      "name": "ShopWave",
+      "sector": "ecommerce",
+      "country": "MX"
+    },
+    "project_summary": "E-commerce platform migration from Magento to a headless architecture",
+    "main_technology": "nodejs",
+    "year": 2024,
+    "total_estimated_hours": 620,
+    "components": [
+      {
+        "component_id": "CATALOG-001",
+        "name": "Product catalog service",
+        "description": "Headless product catalog with variant management, inventory sync, and full-text search over product attributes.",
+        "tech_stack": ["nodejs", "postgresql", "elasticsearch"],
+        "estimated_hours": 200,
+        "complexity": "medium",
+        "dependencies": []
+      },
+      {
+        "component_id": "MIGRATE-002",
+        "name": "Database migration from MySQL to PostgreSQL",
+        "description": "Zero-downtime migration of the legacy Magento MySQL database into the new PostgreSQL schema, including data validation and rollback plan.",
+        "tech_stack": ["nodejs", "mysql", "postgresql"],
+        "estimated_hours": 140,
+        "complexity": "high",
+        "dependencies": []
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-007",
+    "client_metadata": {
+      "name": "MedTrack",
+      "sector": "healthcare",
+      "country": "US"
+    },
+    "project_summary": "Patient record management system with HIPAA-compliant audit logging",
+    "main_technology": "python_django",
+    "year": 2023,
+    "total_estimated_hours": 540,
+    "components": [
+      {
+        "component_id": "AUDIT-001",
+        "name": "HIPAA audit log service",
+        "description": "Append-only audit trail capturing every read/write access to patient records, with tamper-evident hashing and 7-year retention.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 100,
+        "complexity": "medium",
+        "dependencies": []
+      },
+      {
+        "component_id": "RECORDS-002",
+        "name": "Patient record CRUD API",
+        "description": "Core API for creating, reading, updating patient demographic and clinical records with field-level encryption at rest.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "high",
+        "dependencies": ["AUDIT-001"]
+      }
+    ]
+  }
+]

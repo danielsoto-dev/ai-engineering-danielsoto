@@ -141,4 +141,46 @@ La URL del backend se lee de `ESTIMATOR_API_BASE_URL` (default `http://localhost
 
 ---
 
+## Sesion 7 (pre-exercise) — Embedding pipeline
+
+Primer paso hacia RAG: convierte presupuestos historicos (JSON) en chunks
+vectorizados con `text-embedding-3-small`. No hay persistencia todavia — los
+vectores se generan en memoria y se devuelven por HTTP (la Sesion 8 introduce
+PostgreSQL + pgvector).
+
+- `app/embedding_pipeline/chunker.py` — un componente de presupuesto = un chunk.
+- `app/embedding_pipeline/embedder.py` — llama a la API de OpenAI en batches (100 chunks/llamada).
+- `app/embedding_pipeline/router.py` — expone `POST /embeddings/ingest`.
+- `app/embedding_pipeline/SANITY_CHECK.md` — similitud coseno sobre 3 parejas de prueba.
+
+### Probar el endpoint
+
+Con el servicio corriendo (`docker compose up --build` o `uv run uvicorn app.main:app --reload`):
+
+```bash
+curl -s -X POST http://localhost:8000/embeddings/ingest \
+  -H 'Content-Type: application/json' \
+  -d "{\"budgets\": $(cat data/budgets_sample.json)}" | jq '.stats'
+```
+
+O directamente desde Swagger UI en `http://localhost:8000/docs`, endpoint `POST /embeddings/ingest`.
+
+### `scripts/compare.py`
+
+Compara la similitud coseno entre dos textos (implementada a mano, sin numpy).
+
+Dentro del contenedor:
+```bash
+docker compose exec servicio_ia python scripts/compare.py \
+  --text-a "OAuth 2.0 authentication backend for fintech" \
+  --text-b "JWT-based authorization service for banking app"
+```
+
+Fuera del contenedor (con `.env` presente y `uv sync` ejecutado):
+```bash
+uv run python scripts/compare.py \
+  --text-a "OAuth 2.0 authentication backend for fintech" \
+  --text-b "JWT-based authorization service for banking app"
+```
+
 > Este proyecto forma parte del **Master en AI Engineering** y servira como base para evolucionar hacia una arquitectura RAG con base de datos vectorial en modulos posteriores.
