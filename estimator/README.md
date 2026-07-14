@@ -144,43 +144,103 @@ La URL del backend se lee de `ESTIMATOR_API_BASE_URL` (default `http://localhost
 ## Sesion 7 (pre-exercise) — Embedding pipeline
 
 Primer paso hacia RAG: convierte presupuestos historicos (JSON) en chunks
-vectorizados con `text-embedding-3-small`. No hay persistencia todavia — los
-vectores se generan en memoria y se devuelven por HTTP (la Sesion 8 introduce
-PostgreSQL + pgvector).
+vectorizados con `text-embedding-3-small`.
 
 - `app/embedding_pipeline/chunker.py` — un componente de presupuesto = un chunk.
 - `app/embedding_pipeline/embedder.py` — llama a la API de OpenAI en batches (100 chunks/llamada).
-- `app/embedding_pipeline/router.py` — expone `POST /embeddings/ingest`.
 - `app/embedding_pipeline/SANITY_CHECK.md` — similitud coseno sobre 3 parejas de prueba.
 
-### Probar el endpoint
+---
+
+## Sesion 8 (pre-exercise) — Persistencia pgvector + busqueda semantica
+
+El pipeline de la Sesion 7 pasa de ser en-memoria a persistir en PostgreSQL +
+pgvector. `POST /embeddings/ingest` ahora persiste cada presupuesto como un
+`document` con sus `chunks` (uno por componente) en una sola transaccion, y
+un nuevo endpoint `POST /search` resuelve queries semanticas por distancia
+coseno.
+
+- `app/db/models.py` — modelos SQLAlchemy `Document` / `Chunk`.
+- `alembic/` — migraciones (`0001_initial_schema.py` crea la extension `vector` + ambas tablas).
+- `app/embedding_pipeline/router.py` — `POST /embeddings/ingest` (persistente) y `POST /search`.
+- `scripts/query_examples.py` — ingesta el corpus de ejemplo y ejecuta 5 queries representativas (reemplaza `scripts/compare.py`).
+- `output_examples.txt` — output real de `query_examples.py` contra `data/budgets_sample.json`.
+
+### Levantar Postgres y migrar
+
+```bash
+docker compose up -d postgres
+docker compose exec postgres psql -U estimator -d estimator -c "SELECT version();"
+
+# Aplicar el esquema (extension vector + tablas documents/chunks)
+uv run alembic upgrade head
+```
+
+> Nota: el `docker-compose.yml` de este repo mapea Postgres al puerto **5433**
+> del host (`5433:5432`) para no chocar con un Postgres local ya corriendo en
+> 5432. Otros servicios lo alcanzan en la red interna de Docker como
+> `postgres:5432` sin cambios.
+
+### Probar los endpoints
 
 Con el servicio corriendo (`docker compose up --build` o `uv run uvicorn app.main:app --reload`):
 
 ```bash
+# Ingesta (un presupuesto por llamada)
 curl -s -X POST http://localhost:8000/embeddings/ingest \
   -H 'Content-Type: application/json' \
-  -d "{\"budgets\": $(cat data/budgets_sample.json)}" | jq '.stats'
+  -d "{\"source_path\": \"data/budgets_sample.json#BUD-2024-014\", \"document_type\": \"historical_budget\", \"content\": $(jq '.[0]' data/budgets_sample.json)}"
+
+# Busqueda semantica
+curl -s -X POST http://localhost:8000/search \
+  -H 'Content-Type: application/json' \
+  -d '{"query": "REST API with OAuth authentication for fintech sector", "k": 5}'
 ```
 
-O directamente desde Swagger UI en `http://localhost:8000/docs`, endpoint `POST /embeddings/ingest`.
+O directamente desde Swagger UI en `http://localhost:8000/docs`.
 
-### `scripts/compare.py`
+### `scripts/query_examples.py`
 
-Compara la similitud coseno entre dos textos (implementada a mano, sin numpy).
+Ingesta los 3 presupuestos de `data/budgets_sample.json` (idempotente: un
+409 en un re-run se trata como "ya ingerido" y se ignora) y luego ejecuta 5
+queries que cubren angulos distintos del corpus (match directo,
+reformulacion semantica, dominio no relacionado, query ambigua, vocabulario
+tecnico especifico):
 
-Dentro del contenedor:
 ```bash
-docker compose exec servicio_ia python scripts/compare.py \
-  --text-a "OAuth 2.0 authentication backend for fintech" \
-  --text-b "JWT-based authorization service for banking app"
+uv run python scripts/query_examples.py
+# o dentro de Docker:
+docker compose run --rm estimator python scripts/query_examples.py
 ```
 
-Fuera del contenedor (con `.env` presente y `uv sync` ejecutado):
-```bash
-uv run python scripts/compare.py \
-  --text-a "OAuth 2.0 authentication backend for fintech" \
-  --text-b "JWT-based authorization service for banking app"
-```
+### Decisiones de schema
+
+**(a) Dos tablas (`documents` + `chunks`) en vez de una.** Un presupuesto
+produce N chunks (uno por componente). Una tabla unica duplicaria la
+metadata del documento en cada fila y perderia integridad referencial. Con
+`chunks.document_id` + `ON DELETE CASCADE`, borrar un `Document` borra
+automaticamente todos sus `Chunk` sin lógica adicional en la aplicacion.
+
+**(b) `metadata` como JSONB en vez de columnas propias.** La metadata
+estable (tipo de documento, tipo de chunk, fechas) vive en columnas
+tipadas. La metadata variable — la que el chunker puede enriquecer con el
+tiempo (sector, tecnologias mencionadas, tags) — vive en JSONB para no
+requerir una migracion cada vez que cambia. El indice GIN sobre `metadata`
+permite consultar por claves arbitrarias sin ese costo.
+
+**(c) `cosine_distance` en vez de L2 o inner product.** Los embeddings de
+`text-embedding-3-small` estan normalizados, asi que `cosine_distance` e
+`inner_product` dan resultados equivalentes en el ranking. Se elige coseno
+por ser la convencion mas comun en literatura RAG, y para que cuando se
+añada el indice HNSW con `vector_cosine_ops` (sesion en vivo) el operador
+de la query y la operator class del indice queden alineados — un mismatch
+ahi hace que Postgres ignore el indice silenciosamente y caiga a sequential
+scan.
+
+**(d) Sin indice vectorial todavia.** Deliberado: con el volumen de este
+ejercicio (unas pocas decenas de chunks) el sequential scan responde en
+milisegundos, y este es exactamente el baseline contra el que la sesion en
+vivo medira el impacto de HNSW/IVFFlat. Añadirlo ahora eliminaria ese punto
+de comparacion.
 
 > Este proyecto forma parte del **Master en AI Engineering** y servira como base para evolucionar hacia una arquitectura RAG con base de datos vectorial en modulos posteriores.

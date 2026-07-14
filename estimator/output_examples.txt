@@ -1,0 +1,46 @@
+=== Ingesting sample corpus ===
+[ingested] budgets_sample.json#BUD-2024-014 -> 2 chunks
+[ingested] budgets_sample.json#BUD-2024-021 -> 2 chunks
+[ingested] budgets_sample.json#BUD-2023-007 -> 2 chunks
+
+=== Running example queries ===
+
+Query: REST API development with JWT authentication for financial sector
+----------------------------------------------------------------------------------------------------
+  chunk_id=1     distance=0.4107 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=2     distance=0.5032 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=6     distance=0.6411 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+  chunk_id=5     distance=0.6836 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+  chunk_id=3     distance=0.7444 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+
+Query: secure backend service with token-based access control for banking applications
+----------------------------------------------------------------------------------------------------
+  chunk_id=1     distance=0.4149 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=2     distance=0.4673 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=5     distance=0.6541 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+  chunk_id=6     distance=0.6594 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+  chunk_id=4     distance=0.7425 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+
+Query: mobile application for restaurant reservations
+----------------------------------------------------------------------------------------------------
+  chunk_id=1     distance=0.6755 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=2     distance=0.7078 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=6     distance=0.7547 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+  chunk_id=3     distance=0.7745 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+  chunk_id=5     distance=0.7796 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+
+Query: integration with external system
+----------------------------------------------------------------------------------------------------
+  chunk_id=2     distance=0.6785 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=3     distance=0.6825 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+  chunk_id=4     distance=0.6914 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+  chunk_id=1     distance=0.6992 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=6     distance=0.7183 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
+
+Query: migration from monolith to microservices architecture using Kubernetes
+----------------------------------------------------------------------------------------------------
+  chunk_id=3     distance=0.6231 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+  chunk_id=4     distance=0.6650 type=budget_component   [Project: E-commerce platform migration from Magento to a headless architecture] [Client sector: ecommerce | Year: 2024 
+  chunk_id=1     distance=0.7065 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=2     distance=0.7167 type=budget_component   [Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance] [Client sector: finance | Year: 2024 | M
+  chunk_id=6     distance=0.7616 type=budget_component   [Project: Patient record management system with HIPAA-compliant audit logging] [Client sector: healthcare | Year: 2023 |
