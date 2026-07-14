@@ -37,6 +37,12 @@ class Settings(BaseSettings):
 
     ESTIMATOR_API_BASE_URL: str = "http://localhost:8000"
 
+    # --- pgvector persistence ---
+    # docker-compose overrides the host to "postgres"; this default targets
+    # the same container reached from the host machine (port 5433, see
+    # docker-compose.yml) for running uvicorn outside Docker.
+    DATABASE_URL: str = "postgresql+asyncpg://estimator:estimator@localhost:5433/estimator"
+
     # --- Session 5 fields (conversational memory + compression + tier) ---
     # MAX_CONVERSATION_TURNS counts user+assistant pairs; the system prompt is
     # always preserved on top of the sliding window.
