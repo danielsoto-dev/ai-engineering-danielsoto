@@ -12,19 +12,23 @@ services:
     env_file:
       - .env
 
-    # Override REDIS_URL for the in-network Redis service. The .env value
-    # (redis://localhost:6379) is meant for running uvicorn outside Docker.
+    # Override REDIS_URL / DATABASE_URL for the in-network services. The .env
+    # values (localhost) are meant for running uvicorn outside Docker.
     environment:
       REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql+asyncpg://estimator:estimator@postgres:5432/estimator
 
     depends_on:
       redis:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
     # Bind-mount the app/ directory so code changes are reflected immediately
     # inside the container without rebuilding the image.
     volumes:
       - ./app:/app/app
+      - ./alembic:/app/alembic
 
     # Override the default CMD to enable auto-reload on file changes.
     # Remove --reload for production deployments.
@@ -57,5 +61,29 @@ services:
       retries: 3
     restart: unless-stopped
 
+  postgres:
+    # Postgres 16 with the pgvector extension precompiled and installable via
+    # a single CREATE EXTENSION statement.
+    image: pgvector/pgvector:pg16
+    container_name: estimator-postgres
+    environment:
+      POSTGRES_DB: estimator
+      POSTGRES_USER: estimator
+      POSTGRES_PASSWORD: estimator
+    ports:
+      # Host port 5433 to avoid clashing with any locally-running Postgres on
+      # the default 5432. Other services reach it over the Docker network at
+      # postgres:5432 regardless.
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U estimator -d estimator"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
 volumes:
   redis_data:
+  postgres_data:
