@@ -221,3 +221,118 @@ señal de que el top-5 está rellenándose con evidencia débil.
 5. **BUD-2023-007 · healthcare · Patient record CRUD API · distancia 0.7783.** No es relevante.
    Solo comparte la idea genérica de gestionar datos; ni el dominio clínico ni el cifrado de
    historiales ayudan a fundamentar esta estimación de e-commerce.
+
+---
+
+## 3. Diagnóstico: cinco fallos identificados
+
+### Fallo 1 — La transcripción completa diluye la intención de búsqueda
+
+- **Problema observado:** Un único vector representa toda la conversación, incluidas dudas,
+  anécdotas y posibilidades futuras. Aunque recupera correctamente el catálogo en primer lugar,
+  después mezcla migraciones, PSD2, OAuth e historiales clínicos.
+- **Causa probable:** La consulta se embebe sin separar requisitos confirmados, ideas opcionales y
+  ruido conversacional, mientras que los documentos comparados son chunks cortos y específicos.
+- **Propuesta de solución:** Añadir una etapa de interpretación que convierta la transcripción en
+  una consulta enfocada con sector, alcance confirmado, features y restricciones.
+
+### Fallo 2 — El top-5 devuelve evidencia débil por obligación
+
+- **Problema observado:** Con solo seis chunks almacenados, `k=5` devuelve el 83 % del corpus. Los
+  puestos 3–5 tienen distancias entre `0.7550` y `0.7783` y pertenecen a finanzas o salud.
+- **Causa probable:** La búsqueda aplica únicamente un límite fijo; no existe umbral de relevancia
+  ni una salida explícita para indicar que no hay suficientes antecedentes útiles.
+- **Propuesta de solución:** Incorporar una política de recuperación que descarte resultados por
+  encima de un umbral calibrado y permita devolver menos de `k` chunks.
+
+### Fallo 3 — Los chunks se ordenan sin contexto de presupuesto
+
+- **Problema observado:** Los dos primeros resultados pertenecen a `BUD-2024-021`, pero solo el
+  catálogo es útil. La migración de Magento aparece segunda por compartir presupuesto y sector,
+  aunque no existe ninguna migración en la transcripción.
+- **Causa probable:** El ranking trata cada chunk de forma aislada y no agrega evidencia por
+  presupuesto ni comprueba la cobertura de cada feature solicitada.
+- **Propuesta de solución:** Añadir agrupación por presupuesto y una selección diversa por feature,
+  conservando solo los componentes que aporten evidencia al alcance confirmado.
+
+### Fallo 4 — El corpus no cubre el alcance solicitado
+
+- **Problema observado:** El único antecedente de e-commerce aporta catálogo e inventario, pero no
+  hay chunks útiles para checkout, pago con tarjeta, pedidos, dashboard, emails o fidelización. El
+  buscador rellena los huecos con otros sectores.
+- **Causa probable:** El corpus contiene únicamente tres presupuestos y seis componentes, con un
+  solo presupuesto de e-commerce y cobertura funcional muy limitada.
+- **Propuesta de solución:** Ampliar y medir la cobertura del corpus con presupuestos históricos que
+  representen checkout, pagos, operaciones, analítica y fidelización antes de confiar en el RAG.
+
+### Fallo 5 — La recuperación no participa en la estimación
+
+- **Problema observado:** `POST /search` termina devolviendo los chunks al cliente, mientras que
+  `EstimationService` construye su prompt y llama al LLM por un camino independiente. Ninguna hora
+  recuperada aparece como evidencia de una estimación generada.
+- **Causa probable:** No existe un módulo que coordine interpretación, recuperación, construcción
+  de contexto y generación, ni un formato para inyectar los antecedentes en el prompt.
+- **Propuesta de solución:** Añadir un flujo RAG de estimación que ensamble contexto verificable a
+  partir de los resultados aceptados y lo entregue al generador junto al alcance normalizado.
+
+---
+
+## 4. Propuesta de evolución arquitectónica
+
+```mermaid
+flowchart TB
+    subgraph FE["Frontend"]
+        UI["Streamlit"]
+    end
+
+    subgraph BE["Backend de negocio"]
+        HTTP_EST["POST /api/v1/estimate<br/>POST /sessions/{id}/estimate"]
+        ORCH["NUEVO · RAG Estimation Orchestrator"]
+    end
+
+    subgraph AI["Servicio IA"]
+        INTERPRETER["NUEVO · Transcript Interpreter<br/>alcance confirmado + opcionales + restricciones"]
+        EMBEDDER["EXISTENTE · OpenAIEmbedder"]
+        STORAGE["EXISTENTE · PostgreSQL/pgvector"]
+        RETRIEVAL["EXISTENTE · búsqueda por distancia coseno"]
+        POLICY["NUEVO · Retrieval Policy<br/>umbral + diversidad + agrupación"]
+        CONTEXT["NUEVO · Evidence Context Builder<br/>antecedentes + horas + gaps"]
+        GENERATOR["NUEVO · Grounded Estimator<br/>prompt aumentado + estimación"]
+        VALIDATION["EXISTENTE · validación estructurada y guardrails"]
+
+        INGEST_HTTP["EXISTENTE · POST /embeddings/ingest"]
+        CHUNKER["EXISTENTE · JSONStructuralChunker"]
+    end
+
+    UI -->|"transcripción cruda"| HTTP_EST
+    HTTP_EST --> ORCH
+    ORCH --> INTERPRETER
+    INTERPRETER -->|"consulta enfocada"| EMBEDDER
+    EMBEDDER -->|"vector"| RETRIEVAL
+    RETRIEVAL --> STORAGE
+    STORAGE -->|"chunks candidatos"| RETRIEVAL
+    RETRIEVAL --> POLICY
+    POLICY -->|"evidencia aceptada"| CONTEXT
+    INTERPRETER -->|"alcance normalizado"| CONTEXT
+    CONTEXT -->|"paquete de evidencia"| GENERATOR
+    GENERATOR --> VALIDATION
+    VALIDATION -->|"estimación fundamentada"| ORCH
+    ORCH --> HTTP_EST
+    HTTP_EST --> UI
+
+    BUDGET["Presupuesto histórico"] --> INGEST_HTTP
+    INGEST_HTTP --> CHUNKER
+    CHUNKER --> EMBEDDER
+    EMBEDDER --> STORAGE
+
+    classDef new fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+    class ORCH,INTERPRETER,POLICY,CONTEXT,GENERATOR new
+```
+
+`Transcript Interpreter` separa el alcance confirmado de las ideas opcionales y produce una
+consulta enfocada. `Retrieval Policy` filtra, agrupa y diversifica los candidatos; `Evidence Context
+Builder` combina los chunks aceptados con el alcance y explicita tanto las horas históricas como los
+huecos sin evidencia. `Grounded Estimator` genera la estimación usando ese paquete, y `RAG
+Estimation Orchestrator` conecta todo el recorrido desde los endpoints existentes. Si solo pudiera
+construir una pieza primero, elegiría el orquestador con el ensamblado mínimo de contexto: es el seam
+que hoy no existe y sin él ningún resultado recuperado puede influir en la estimación.
