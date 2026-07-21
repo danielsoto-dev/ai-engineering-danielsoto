@@ -40,12 +40,11 @@ flowchart TB
     style RESULTS fill:#fee2e2,stroke:#dc2626,stroke-width:2px
 ```
 
-Las tres capas son lógicas: en este repositorio el backend de negocio y el servicio IA se ejecutan
-dentro del mismo proceso FastAPI. El frontend usa los endpoints de estimación, mientras que los
-endpoints de ingesta y búsqueda quedan expuestos en paralelo. El código no contiene directorios
-literales `ingest/` y `storage/`; esas responsabilidades están en `JSONStructuralChunker` y
-`app/db/`, respectivamente. La búsqueda termina al devolver chunks: no existe una conexión desde
-ese resultado hacia `EstimationService`.
+En la práctica, estas tres capas están un poco mezcladas porque el backend y la parte de IA corren
+en el mismo FastAPI. Streamlit usa los endpoints de estimación y, por otro lado, quedan los de
+ingesta y búsqueda. Tampoco hay carpetas llamadas literalmente `ingest/` y `storage/`: ese trabajo
+lo hacen `JSONStructuralChunker` y `app/db/`. El punto importante del dibujo es el final: la búsqueda
+devuelve chunks, pero esos chunks no llegan a `EstimationService`.
 
 ---
 
@@ -90,10 +89,11 @@ first_component: 0.00623322
 last_component: 0.01901245
 ```
 
-**Comentario.** El vector de 1536 dimensiones y norma cercana a 1 representa toda la reunión como
-un único punto semántico. Mezcla la señal útil —tienda online, catálogo, stock, pagos y panel— con
-historia personal, dudas, conversación social y posibilidades futuras; no distingue alcance firme
-de ideas tentativas.
+**Comentario.** Aquí toda la reunión acaba resumida en un solo vector. Eso incluye lo importante
+—tienda online, catálogo, stock, pagos y panel—, pero también las anécdotas, las dudas y cosas que
+quizá se hagan más adelante. Técnicamente son `1536` dimensiones y una norma cercana a `1`, pero el
+problema no es el formato del vector: parece demasiado general para una búsqueda tan concreta y no
+distingue bien el alcance firme de las ideas tentativas.
 
 ### Paso 2 — Búsqueda semántica (top-5)
 
@@ -199,28 +199,29 @@ Respuesta cruda obtenida (el campo `query` contiene literalmente el contenido co
 }
 ```
 
-**Comentario.** El primer resultado sí detecta la intención principal de comercio electrónico,
-pero el segundo ya comparte solamente el sector y el presupuesto padre. Los tres resultados
-restantes pertenecen a finanzas y salud y tienen distancias cercanas entre sí (`0.7550`–`0.7783`),
-señal de que el top-5 está rellenándose con evidencia débil.
+**Comentario.** El primer resultado tiene bastante sentido porque encuentra un catálogo de
+e-commerce. A partir de ahí la calidad baja rápido: aparece una migración que no se pidió y después
+resultados de banca y salud. Además, esos últimos están muy juntos (`0.7550`–`0.7783`), así que da la
+sensación de que el buscador está completando el top-5 con lo que queda disponible.
 
 ### Paso 3 — Lectura de los chunks devueltos
 
-1. **BUD-2024-021 · ecommerce · Product catalog service · distancia 0.6555.** Es relevante: el
-   cliente necesita catálogo, visualización de productos y control de stock. No cubre pagos,
-   pedidos, fidelización ni el panel de gestión, pero es un buen antecedente parcial.
-2. **BUD-2024-021 · ecommerce · Database migration · distancia 0.7236.** La coincidencia de sector
-   es correcta, pero el chunk no es relevante para el alcance descrito. El cliente no ha pedido una
-   migración desde Magento/MySQL ni ha mencionado un sistema anterior.
-3. **BUD-2024-014 · finance · PSD2 compliance · distancia 0.7550.** No es relevante. El pago con
-   tarjeta no convierte el proyecto en una plataforma financiera ni implica PSD2, SCA o gestión de
-   consentimientos bancarios.
-4. **BUD-2024-014 · finance · OAuth backend · distancia 0.7668.** Es poco relevante. Una tienda
-   necesitará usuarios y seguridad, pero la transcripción no pide OAuth, multi-tenancy, JWT ni rate
-   limiting, y el sector financiero distorsiona la comparación.
-5. **BUD-2023-007 · healthcare · Patient record CRUD API · distancia 0.7783.** No es relevante.
-   Solo comparte la idea genérica de gestionar datos; ni el dominio clínico ni el cifrado de
-   historiales ayudan a fundamentar esta estimación de e-commerce.
+1. **BUD-2024-021 · ecommerce · Product catalog service · distancia 0.6555.** Este sí encaja. Rubén
+   quiere mostrar productos y controlar stock. No resuelve toda la tienda, pero sirve como una
+   referencia razonable para esa parte. No cubre pagos, pedidos, fidelización ni el panel de gestión.
+2. **BUD-2024-021 · ecommerce · Database migration · distancia 0.7236.** Comparte sector con el
+   proyecto, pero poco más. En ningún momento se habla de Magento, MySQL o de migrar una plataforma
+   anterior, así que yo no usaría este chunk para estimar.
+3. **BUD-2024-014 · finance · PSD2 compliance · distancia 0.7550.** No lo veo relevante. Que la
+   tienda acepte tarjetas no significa que tengamos que construir una plataforma bancaria con
+   `PSD2`, autenticación reforzada (`SCA`) o gestión de consentimientos.
+4. **BUD-2024-014 · finance · OAuth backend · distancia 0.7668.** Puede haber una relación muy
+   general con usuarios y seguridad, pero la reunión no menciona `OAuth`, `JWT`, multi-tenancy ni
+   rate limiting. Además, viene del sector financiero, así que es una referencia demasiado alejada
+   del problema real.
+5. **BUD-2023-007 · healthcare · Patient record CRUD API · distancia 0.7783.** Este directamente no
+   encaja. Gestionar historiales clínicos con cifrado a nivel de campo no aporta demasiado para
+   estimar una tienda gourmet.
 
 ---
 
@@ -228,52 +229,51 @@ señal de que el top-5 está rellenándose con evidencia débil.
 
 ### Fallo 1 — La transcripción completa diluye la intención de búsqueda
 
-- **Problema observado:** Un único vector representa toda la conversación, incluidas dudas,
-  anécdotas y posibilidades futuras. Aunque recupera correctamente el catálogo en primer lugar,
-  después mezcla migraciones, PSD2, OAuth e historiales clínicos.
-- **Causa probable:** La consulta se embebe sin separar requisitos confirmados, ideas opcionales y
-  ruido conversacional, mientras que los documentos comparados son chunks cortos y específicos.
-- **Propuesta de solución:** Añadir una etapa de interpretación que convierta la transcripción en
-  una consulta enfocada con sector, alcance confirmado, features y restricciones.
+- **Problema observado:** Metemos toda la conversación en un solo vector. El catálogo sale primero,
+  pero después se mezclan migraciones, `PSD2`, `OAuth` e historiales clínicos.
+- **Causa probable:** No se separa lo que Rubén necesita de verdad de las dudas, anécdotas e ideas
+  para más adelante. En cambio, los chunks históricos son cortos y específicos, así que estamos
+  comparando textos con tamaños y niveles de detalle bastante distintos.
+- **Propuesta de solución:** Antes de buscar, sacar una versión más limpia con el sector, lo que
+  entra en alcance, las features, lo opcional y las restricciones conocidas.
 
 ### Fallo 2 — El top-5 devuelve evidencia débil por obligación
 
-- **Problema observado:** Con solo seis chunks almacenados, `k=5` devuelve el 83 % del corpus. Los
-  puestos 3–5 tienen distancias entre `0.7550` y `0.7783` y pertenecen a finanzas o salud.
-- **Causa probable:** La búsqueda aplica únicamente un límite fijo; no existe umbral de relevancia
-  ni una salida explícita para indicar que no hay suficientes antecedentes útiles.
-- **Propuesta de solución:** Incorporar una política de recuperación que descarte resultados por
-  encima de un umbral calibrado y permita devolver menos de `k` chunks.
+- **Problema observado:** Tenemos `6` chunks y pedimos `k=5`, así que la búsqueda devuelve el `83 %`
+  del corpus. Los puestos `3–5` son de finanzas y salud, con distancias entre `0.7550` y `0.7783`.
+- **Causa probable:** El sistema intenta completar siempre el `k=5`, aunque después del primer
+  resultado ya no haya referencias realmente buenas. No existe un umbral de relevancia ni una forma
+  de decir que no hay suficientes antecedentes útiles.
+- **Propuesta de solución:** Usar un umbral calibrado y aceptar que a veces la respuesta correcta
+  sea `1` o `2` chunks, no `5`.
 
 ### Fallo 3 — Los chunks se ordenan sin contexto de presupuesto
 
-- **Problema observado:** Los dos primeros resultados pertenecen a `BUD-2024-021`, pero solo el
-  catálogo es útil. La migración de Magento aparece segunda por compartir presupuesto y sector,
-  aunque no existe ninguna migración en la transcripción.
-- **Causa probable:** El ranking trata cada chunk de forma aislada y no agrega evidencia por
-  presupuesto ni comprueba la cobertura de cada feature solicitada.
-- **Propuesta de solución:** Añadir agrupación por presupuesto y una selección diversa por feature,
-  conservando solo los componentes que aporten evidencia al alcance confirmado.
+- **Problema observado:** Los dos primeros chunks vienen de `BUD-2024-021`, pero solo el de catálogo
+  ayuda. La migración de `Magento/MySQL` aparece arriba aunque Rubén nunca habló de migraciones.
+- **Causa probable:** Cada chunk se ordena por separado. El sistema no se pregunta si ese componente
+  concreto cubre alguna feature de la reunión ni agrega la evidencia por presupuesto.
+- **Propuesta de solución:** Agrupar por presupuesto y hacer una selección variada por feature,
+  revisando qué necesidad cubre cada chunk antes de incluirlo como contexto.
 
 ### Fallo 4 — El corpus no cubre el alcance solicitado
 
-- **Problema observado:** El único antecedente de e-commerce aporta catálogo e inventario, pero no
-  hay chunks útiles para checkout, pago con tarjeta, pedidos, dashboard, emails o fidelización. El
-  buscador rellena los huecos con otros sectores.
-- **Causa probable:** El corpus contiene únicamente tres presupuestos y seis componentes, con un
-  solo presupuesto de e-commerce y cobertura funcional muy limitada.
-- **Propuesta de solución:** Ampliar y medir la cobertura del corpus con presupuestos históricos que
-  representen checkout, pagos, operaciones, analítica y fidelización antes de confiar en el RAG.
+- **Problema observado:** Tenemos una referencia para catálogo e inventario, pero nada útil sobre
+  checkout, pagos, pedidos, dashboard, emails o fidelización.
+- **Causa probable:** El corpus todavía es muy pequeño: `3` presupuestos, `6` componentes y solo
+  `1` proyecto de e-commerce.
+- **Propuesta de solución:** Añadir más presupuestos reales que cubran esas partes. También conviene
+  medir la cobertura para saber qué temas están poco representados antes de fiarnos del RAG.
 
 ### Fallo 5 — La recuperación no participa en la estimación
 
-- **Problema observado:** `POST /search` termina devolviendo los chunks al cliente, mientras que
-  `EstimationService` construye su prompt y llama al LLM por un camino independiente. Ninguna hora
-  recuperada aparece como evidencia de una estimación generada.
-- **Causa probable:** No existe un módulo que coordine interpretación, recuperación, construcción
-  de contexto y generación, ni un formato para inyectar los antecedentes en el prompt.
-- **Propuesta de solución:** Añadir un flujo RAG de estimación que ensamble contexto verificable a
-  partir de los resultados aceptados y lo entregue al generador junto al alcance normalizado.
+- **Problema observado:** `POST /search` devuelve los chunks y ahí se acaba todo. Por otro lado,
+  `EstimationService` llama al LLM sin usar esos resultados, por lo que ninguna hora recuperada
+  aparece como evidencia dentro de la estimación.
+- **Causa probable:** Falta la pieza que conecte interpretación, búsqueda, construcción de contexto
+  y generación. Tampoco hay un formato definido para meter esos antecedentes en el prompt.
+- **Propuesta de solución:** Crear un flujo que tome los resultados útiles, prepare un contexto
+  verificable y se lo pase al generador junto con el alcance normalizado del proyecto.
 
 ---
 
@@ -287,17 +287,17 @@ flowchart TB
 
     subgraph BE["Backend de negocio"]
         HTTP_EST["POST /api/v1/estimate<br/>POST /sessions/{id}/estimate"]
-        ORCH["NUEVO · RAG Estimation Orchestrator"]
+        ORCH["NUEVO · Coordinador RAG<br/>RAG Estimation Orchestrator"]
     end
 
     subgraph AI["Servicio IA"]
-        INTERPRETER["NUEVO · Transcript Interpreter<br/>alcance confirmado + opcionales + restricciones"]
+        INTERPRETER["NUEVO · Limpieza de transcripción<br/>Transcript Interpreter<br/>alcance confirmado + opcionales + restricciones"]
         EMBEDDER["EXISTENTE · OpenAIEmbedder"]
         STORAGE["EXISTENTE · PostgreSQL/pgvector"]
         RETRIEVAL["EXISTENTE · búsqueda por distancia coseno"]
-        POLICY["NUEVO · Retrieval Policy<br/>umbral + diversidad + agrupación"]
-        CONTEXT["NUEVO · Evidence Context Builder<br/>antecedentes + horas + gaps"]
-        GENERATOR["NUEVO · Grounded Estimator<br/>prompt aumentado + estimación"]
+        POLICY["NUEVO · Filtro de resultados<br/>Retrieval Policy<br/>umbral + diversidad + agrupación"]
+        CONTEXT["NUEVO · Constructor de contexto<br/>Evidence Context Builder<br/>antecedentes + horas + gaps"]
+        GENERATOR["NUEVO · Generador de estimación<br/>Grounded Estimator<br/>prompt aumentado + estimación"]
         VALIDATION["EXISTENTE · validación estructurada y guardrails"]
 
         INGEST_HTTP["EXISTENTE · POST /embeddings/ingest"]
@@ -329,10 +329,11 @@ flowchart TB
     class ORCH,INTERPRETER,POLICY,CONTEXT,GENERATOR new
 ```
 
-`Transcript Interpreter` separa el alcance confirmado de las ideas opcionales y produce una
-consulta enfocada. `Retrieval Policy` filtra, agrupa y diversifica los candidatos; `Evidence Context
-Builder` combina los chunks aceptados con el alcance y explicita tanto las horas históricas como los
-huecos sin evidencia. `Grounded Estimator` genera la estimación usando ese paquete, y `RAG
-Estimation Orchestrator` conecta todo el recorrido desde los endpoints existentes. Si solo pudiera
-construir una pieza primero, elegiría el orquestador con el ensamblado mínimo de contexto: es el seam
-que hoy no existe y sin él ningún resultado recuperado puede influir en la estimación.
+Primero limpiaría la transcripción para quedarme con lo que parece entrar de verdad en el proyecto.
+Esa parte sería el `Transcript Interpreter`. Después, la `Retrieval Policy` decidiría qué resultados
+merecen usarse y el `Evidence Context Builder` los pondría en un formato fácil de pasar al LLM,
+incluyendo las horas históricas, el alcance y también los gaps sin evidencia. El `Grounded Estimator`
+usaría ese contexto para preparar la estimación. Si tuviera que empezar por una sola pieza, haría el
+`RAG Estimation Orchestrator` con una versión sencilla del ensamblado de contexto: ahora mismo el
+mayor problema es que la búsqueda y la estimación ni siquiera están conectadas. Ese es justo el
+seam que hoy no existe y el que permitiría que los resultados recuperados influyan en la estimación.
