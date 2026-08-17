@@ -29,6 +29,9 @@ services:
     volumes:
       - ./app:/app/app
       - ./alembic:/app/alembic
+      # Persist the downloaded cross-encoder so recreating the container does
+      # not re-download the model on the first reranked search.
+      - huggingface_cache:/home/appuser/.cache/huggingface
 
     # Override the default CMD to enable auto-reload on file changes.
     # Remove --reload for production deployments.
@@ -87,3 +90,4 @@ services:
 volumes:
   redis_data:
   postgres_data:
+  huggingface_cache:
