@@ -1,0 +1,828 @@
+[
+  {
+    "budget_id": "BUD-2024-101",
+    "client_metadata": {"name": "TiendaViva", "sector": "ecommerce", "country": "ES"},
+    "project_summary": "Plataforma de comercio electrónico headless para una cadena de moda con catálogo multi-idioma",
+    "main_technology": "nodejs",
+    "year": 2024,
+    "total_estimated_hours": 820,
+    "components": [
+      {
+        "component_id": "CAT-001",
+        "name": "Servicio de catálogo de productos",
+        "description": "Catálogo headless con gestión de variantes por talla y color, sincronización de inventario contra el ERP y búsqueda de texto completo sobre atributos de producto.",
+        "tech_stack": ["nodejs", "postgresql", "elasticsearch"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "CART-002",
+        "name": "Carrito de la compra y proceso de checkout",
+        "description": "Carrito persistente entre dispositivos, cálculo de impuestos por país, gestión de cupones de descuento y flujo de checkout en tres pasos.",
+        "tech_stack": ["nodejs", "postgresql", "redis"],
+        "estimated_hours": 180,
+        "complexity": "high",
+        "dependencies": ["CAT-001"]
+      },
+      {
+        "component_id": "PAY-003",
+        "name": "Integración de pasarela de pago",
+        "description": "Integración con Stripe y Redsys para pagos con tarjeta, gestión de reembolsos parciales y conciliación diaria de transacciones.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 140,
+        "complexity": "medium",
+        "dependencies": ["CART-002"]
+      },
+      {
+        "component_id": "STORE-004",
+        "name": "Escaparate web de cliente",
+        "description": "Frontend de tienda renderizado en servidor con páginas de producto optimizadas para SEO, navegación por facetas y diseño adaptable a móvil.",
+        "tech_stack": ["nextjs", "react"],
+        "estimated_hours": 280,
+        "complexity": "high",
+        "dependencies": ["CAT-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-102",
+    "client_metadata": {"name": "MercadoNorte", "sector": "ecommerce", "country": "MX"},
+    "project_summary": "Marketplace multivendedor con panel de vendedores y liquidación automática de comisiones",
+    "main_technology": "python_django",
+    "year": 2024,
+    "total_estimated_hours": 940,
+    "components": [
+      {
+        "component_id": "SELL-001",
+        "name": "Panel de gestión para vendedores",
+        "description": "Portal donde cada vendedor gestiona su catálogo, consulta pedidos entrantes y descarga informes de ventas mensuales.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "COMM-002",
+        "name": "Motor de liquidación de comisiones",
+        "description": "Cálculo automático de comisiones por categoría de producto y volumen de ventas, con generación de facturas y transferencias programadas a vendedores.",
+        "tech_stack": ["python_django", "postgresql", "celery"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": ["SELL-001"]
+      },
+      {
+        "component_id": "SEARCH-003",
+        "name": "Buscador de productos con facetas",
+        "description": "Búsqueda de texto completo sobre el catálogo agregado de todos los vendedores, con filtros por precio, valoración y tiempo de entrega.",
+        "tech_stack": ["python_django", "elasticsearch"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": ["SELL-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-103",
+    "client_metadata": {"name": "BazarLocal", "sector": "ecommerce", "country": "ES"},
+    "project_summary": "Migración de una tienda online desde Magento a una arquitectura desacoplada",
+    "main_technology": "nodejs",
+    "year": 2023,
+    "total_estimated_hours": 560,
+    "components": [
+      {
+        "component_id": "MIG-001",
+        "name": "Migración de datos desde Magento",
+        "description": "Traspaso sin cortes de servicio del catálogo histórico, clientes y pedidos desde MySQL de Magento al nuevo esquema PostgreSQL, con validación y plan de reversión.",
+        "tech_stack": ["nodejs", "mysql", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "API-002",
+        "name": "Capa de API de comercio",
+        "description": "API REST que expone catálogo, carrito y pedidos al nuevo frontend, manteniendo compatibilidad temporal con los plugins heredados de Magento.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 200,
+        "complexity": "medium",
+        "dependencies": ["MIG-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-104",
+    "client_metadata": {"name": "PagoSeguro", "sector": "finance", "country": "ES"},
+    "project_summary": "Aplicación móvil de pagos entre particulares con verificación de identidad",
+    "main_technology": "ruby_on_rails",
+    "year": 2024,
+    "total_estimated_hours": 700,
+    "components": [
+      {
+        "component_id": "PAYCORE-001",
+        "name": "Motor de procesamiento de pagos",
+        "description": "Procesamiento de transferencias inmediatas entre monederos de usuario, con libro mayor de doble entrada y garantías de idempotencia ante reintentos.",
+        "tech_stack": ["ruby_on_rails", "postgresql", "redis"],
+        "estimated_hours": 260,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "KYC-002",
+        "name": "Verificación de identidad del usuario",
+        "description": "Flujo de conocimiento del cliente con captura de documento, prueba de vida por vídeo y comprobación contra listas de sanciones.",
+        "tech_stack": ["ruby_on_rails", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "FRAUD-003",
+        "name": "Detección de fraude en tiempo real",
+        "description": "Sistema de reglas que puntúa cada transacción según dispositivo, geolocalización y patrón histórico de gasto, bloqueando operaciones sospechosas.",
+        "tech_stack": ["ruby_on_rails", "postgresql", "redis"],
+        "estimated_hours": 160,
+        "complexity": "high",
+        "dependencies": ["PAYCORE-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-105",
+    "client_metadata": {"name": "BancaAbierta", "sector": "finance", "country": "ES"},
+    "project_summary": "API de banca abierta conforme a PSD2 con autenticación reforzada",
+    "main_technology": "java_spring",
+    "year": 2024,
+    "total_estimated_hours": 880,
+    "components": [
+      {
+        "component_id": "OAUTH-001",
+        "name": "Servidor de autorización OAuth 2.0",
+        "description": "Implementación de los flujos de código de autorización y refresco de token, con sesiones basadas en JWT y limitación de peticiones por cliente.",
+        "tech_stack": ["java_spring", "postgresql", "redis"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "SCA-002",
+        "name": "Módulo de cumplimiento PSD2",
+        "description": "Flujos de autenticación reforzada de cliente y gestión de consentimientos exigidos por la normativa PSD2 en la Unión Europea.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": ["OAUTH-001"]
+      },
+      {
+        "component_id": "ACC-003",
+        "name": "Agregación de información de cuentas",
+        "description": "Servicio que consolida saldos y movimientos de varias entidades bancarias mediante conectores normalizados y caché de corta duración.",
+        "tech_stack": ["java_spring", "postgresql", "redis"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": ["SCA-002"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-106",
+    "client_metadata": {"name": "InverFácil", "sector": "finance", "country": "MX"},
+    "project_summary": "Plataforma de inversión automatizada con carteras gestionadas por perfil de riesgo",
+    "main_technology": "python_django",
+    "year": 2023,
+    "total_estimated_hours": 640,
+    "components": [
+      {
+        "component_id": "PORT-001",
+        "name": "Motor de construcción de carteras",
+        "description": "Asignación de activos según perfil de riesgo del inversor, con reequilibrado periódico y registro de las decisiones tomadas para auditoría.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "REPORT-002",
+        "name": "Informes fiscales para el inversor",
+        "description": "Generación de informes anuales de plusvalías y retenciones en formato PDF, adaptados a la normativa fiscal de cada país.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 140,
+        "complexity": "medium",
+        "dependencies": ["PORT-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-107",
+    "client_metadata": {"name": "ClínicaRed", "sector": "healthcare", "country": "ES"},
+    "project_summary": "Portal del paciente con cita previa e historia clínica electrónica",
+    "main_technology": "python_django",
+    "year": 2024,
+    "total_estimated_hours": 760,
+    "components": [
+      {
+        "component_id": "APPT-001",
+        "name": "Sistema de cita previa",
+        "description": "Reserva de citas por especialidad con gestión de agendas médicas, lista de espera automática y recordatorios por SMS y correo.",
+        "tech_stack": ["python_django", "postgresql", "celery"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "EHR-002",
+        "name": "Historia clínica electrónica",
+        "description": "Almacenamiento cifrado de episodios clínicos, alergias y medicación activa, con registro de accesos conforme al RGPD para datos de salud.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 280,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "TELE-003",
+        "name": "Consulta médica por videollamada",
+        "description": "Sala de videoconsulta integrada en el portal, con sala de espera virtual y adjuntos de informes durante la sesión.",
+        "tech_stack": ["python_django", "webrtc"],
+        "estimated_hours": 180,
+        "complexity": "high",
+        "dependencies": ["APPT-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-108",
+    "client_metadata": {"name": "FarmaGestión", "sector": "healthcare", "country": "ES"},
+    "project_summary": "Sistema de trazabilidad de medicamentos para una red de farmacias",
+    "main_technology": "java_spring",
+    "year": 2023,
+    "total_estimated_hours": 520,
+    "components": [
+      {
+        "component_id": "TRACE-001",
+        "name": "Trazabilidad de lotes de medicamentos",
+        "description": "Seguimiento de cada lote desde el almacén hasta la dispensación, con verificación de códigos y alertas de caducidad próxima.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "STOCK-002",
+        "name": "Reposición automática de existencias",
+        "description": "Cálculo de puntos de pedido por farmacia según consumo histórico y estacionalidad, con generación de pedidos al distribuidor.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "medium",
+        "dependencies": ["TRACE-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-109",
+    "client_metadata": {"name": "TransRuta", "sector": "logistics", "country": "ES"},
+    "project_summary": "Plataforma de gestión de flota con optimización de rutas de reparto",
+    "main_technology": "python_django",
+    "year": 2024,
+    "total_estimated_hours": 800,
+    "components": [
+      {
+        "component_id": "ROUTE-001",
+        "name": "Optimizador de rutas de reparto",
+        "description": "Cálculo diario de rutas óptimas considerando ventanas horarias de entrega, capacidad del vehículo y tráfico previsto.",
+        "tech_stack": ["python_django", "postgresql", "redis"],
+        "estimated_hours": 280,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "TRACK-002",
+        "name": "Seguimiento de vehículos en tiempo real",
+        "description": "Ingesta de posiciones GPS de la flota, visualización en mapa y alertas por desvío de ruta o parada no planificada.",
+        "tech_stack": ["python_django", "postgresql", "redis"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": ["ROUTE-001"]
+      },
+      {
+        "component_id": "POD-003",
+        "name": "Prueba de entrega en aplicación móvil",
+        "description": "Aplicación para el repartidor con firma del receptor, fotografía del paquete entregado y sincronización diferida sin cobertura.",
+        "tech_stack": ["react_native", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": ["TRACK-002"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-110",
+    "client_metadata": {"name": "AlmacénCentral", "sector": "logistics", "country": "MX"},
+    "project_summary": "Sistema de gestión de almacén con preparación de pedidos guiada",
+    "main_technology": "java_spring",
+    "year": 2024,
+    "total_estimated_hours": 720,
+    "components": [
+      {
+        "component_id": "WMS-001",
+        "name": "Gestión de ubicaciones y existencias",
+        "description": "Control de existencias por ubicación física, con recuentos cíclicos, reubicaciones y trazabilidad de movimientos internos.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 260,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "PICK-002",
+        "name": "Preparación de pedidos guiada por terminal",
+        "description": "Secuenciación de recorridos de preparación y validación por lectura de código de barras en terminal de radiofrecuencia.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": ["WMS-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-111",
+    "client_metadata": {"name": "AulaDigital", "sector": "education", "country": "ES"},
+    "project_summary": "Campus virtual con cursos en vídeo y evaluación automática",
+    "main_technology": "nodejs",
+    "year": 2024,
+    "total_estimated_hours": 680,
+    "components": [
+      {
+        "component_id": "COURSE-001",
+        "name": "Gestor de contenidos formativos",
+        "description": "Creación de cursos con módulos, lecciones en vídeo y materiales descargables, con control de progreso por alumno.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 220,
+        "complexity": "medium",
+        "dependencies": []
+      },
+      {
+        "component_id": "QUIZ-002",
+        "name": "Motor de evaluación automática",
+        "description": "Cuestionarios autocorregibles con banco de preguntas aleatorizado, intentos limitados y cálculo de nota final ponderada.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": ["COURSE-001"]
+      },
+      {
+        "component_id": "VIDEO-003",
+        "name": "Distribución de vídeo bajo demanda",
+        "description": "Transcodificación de vídeo a varias calidades y entrega mediante red de distribución con protección del contenido.",
+        "tech_stack": ["nodejs", "ffmpeg"],
+        "estimated_hours": 160,
+        "complexity": "high",
+        "dependencies": ["COURSE-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-112",
+    "client_metadata": {"name": "EscuelaConecta", "sector": "education", "country": "MX"},
+    "project_summary": "Portal de comunicación entre centro escolar y familias",
+    "main_technology": "python_django",
+    "year": 2023,
+    "total_estimated_hours": 440,
+    "components": [
+      {
+        "component_id": "MSG-001",
+        "name": "Mensajería entre tutores y profesorado",
+        "description": "Canal de mensajes por aula y por alumno, con confirmación de lectura y adjuntos de circulares del centro.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "medium",
+        "dependencies": []
+      },
+      {
+        "component_id": "GRADE-002",
+        "name": "Publicación de calificaciones",
+        "description": "Carga de notas por evaluación y publicación al tutor legal, con histórico por curso y exportación a boletín en PDF.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 140,
+        "complexity": "medium",
+        "dependencies": ["MSG-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-113",
+    "client_metadata": {"name": "StreamOla", "sector": "media", "country": "ES"},
+    "project_summary": "Servicio de streaming de vídeo por suscripción con recomendaciones personalizadas",
+    "main_technology": "nodejs",
+    "year": 2024,
+    "total_estimated_hours": 900,
+    "components": [
+      {
+        "component_id": "SUB-001",
+        "name": "Gestión de suscripciones recurrentes",
+        "description": "Alta, cambio de plan y cancelación de suscripciones, con cobros recurrentes, reintentos ante impago y periodos de prueba.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "RECO-002",
+        "name": "Motor de recomendación de contenidos",
+        "description": "Recomendaciones basadas en historial de visionado y similitud entre títulos, con recálculo diario de la parrilla personalizada.",
+        "tech_stack": ["nodejs", "postgresql", "redis"],
+        "estimated_hours": 260,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "PLAY-003",
+        "name": "Reproductor multiplataforma",
+        "description": "Reproductor con calidad adaptativa, reanudación del punto de visionado entre dispositivos y subtítulos multi-idioma.",
+        "tech_stack": ["react", "nodejs"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": ["SUB-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-114",
+    "client_metadata": {"name": "DiarioAbierto", "sector": "media", "country": "ES"},
+    "project_summary": "Portal de noticias con muro de pago y gestión editorial",
+    "main_technology": "python_django",
+    "year": 2023,
+    "total_estimated_hours": 580,
+    "components": [
+      {
+        "component_id": "CMS-001",
+        "name": "Redacción y publicación editorial",
+        "description": "Flujo de redacción con estados de borrador, revisión y publicación programada, más edición colaborativa de artículos.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "WALL-002",
+        "name": "Muro de pago por número de artículos",
+        "description": "Control de artículos gratuitos por lector y conversión a suscripción, con reglas de acceso por sección del periódico.",
+        "tech_stack": ["python_django", "redis"],
+        "estimated_hours": 160,
+        "complexity": "medium",
+        "dependencies": ["CMS-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-115",
+    "client_metadata": {"name": "ViajaFácil", "sector": "travel", "country": "ES"},
+    "project_summary": "Buscador y motor de reservas de vuelos y hoteles",
+    "main_technology": "java_spring",
+    "year": 2024,
+    "total_estimated_hours": 860,
+    "components": [
+      {
+        "component_id": "SEARCH-001",
+        "name": "Buscador de disponibilidad y precios",
+        "description": "Consulta simultánea a proveedores externos de vuelo y alojamiento, con normalización de resultados y caché de precios de corta duración.",
+        "tech_stack": ["java_spring", "redis", "postgresql"],
+        "estimated_hours": 280,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "BOOK-002",
+        "name": "Motor de reservas y emisión",
+        "description": "Confirmación de reserva contra el proveedor, emisión de localizador y gestión de cancelaciones dentro del plazo permitido.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": ["SEARCH-001"]
+      },
+      {
+        "component_id": "PRICE-003",
+        "name": "Comparador de tarifas y alertas",
+        "description": "Seguimiento del precio de rutas favoritas del usuario y aviso por correo cuando la tarifa baja del umbral configurado.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "medium",
+        "dependencies": ["SEARCH-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-116",
+    "client_metadata": {"name": "HotelSuite", "sector": "hospitality", "country": "ES"},
+    "project_summary": "Sistema de gestión hotelera con motor de reservas directas",
+    "main_technology": "nodejs",
+    "year": 2023,
+    "total_estimated_hours": 620,
+    "components": [
+      {
+        "component_id": "PMS-001",
+        "name": "Gestión de habitaciones y ocupación",
+        "description": "Control de disponibilidad por tipo de habitación, entradas y salidas, y asignación automática según preferencias del huésped.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "RATE-002",
+        "name": "Motor de tarifas dinámicas",
+        "description": "Ajuste de precio por temporada, ocupación prevista y antelación de la reserva, con distribución a portales externos.",
+        "tech_stack": ["nodejs", "postgresql", "redis"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": ["PMS-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-117",
+    "client_metadata": {"name": "InmoVista", "sector": "realestate", "country": "ES"},
+    "project_summary": "Portal inmobiliario con visitas virtuales y gestión de captación",
+    "main_technology": "nodejs",
+    "year": 2024,
+    "total_estimated_hours": 660,
+    "components": [
+      {
+        "component_id": "LIST-001",
+        "name": "Publicación de inmuebles",
+        "description": "Alta de propiedades con galería fotográfica, planos y características, más sindicación automática a portales colaboradores.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 220,
+        "complexity": "medium",
+        "dependencies": []
+      },
+      {
+        "component_id": "TOUR-002",
+        "name": "Visita virtual interactiva",
+        "description": "Recorrido navegable en trescientos sesenta grados por la vivienda, con puntos de interés y medición aproximada de estancias.",
+        "tech_stack": ["react", "threejs"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": ["LIST-001"]
+      },
+      {
+        "component_id": "LEAD-003",
+        "name": "Gestión de contactos interesados",
+        "description": "Captación de solicitudes de visita, reparto entre agentes de la oficina y seguimiento del estado de cada oportunidad.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "medium",
+        "dependencies": ["LIST-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-118",
+    "client_metadata": {"name": "EnerSol", "sector": "energy", "country": "ES"},
+    "project_summary": "Plataforma de monitorización de instalaciones solares fotovoltaicas",
+    "main_technology": "python_django",
+    "year": 2024,
+    "total_estimated_hours": 740,
+    "components": [
+      {
+        "component_id": "TELEM-001",
+        "name": "Ingesta de telemetría de inversores",
+        "description": "Recepción de lecturas de producción cada cinco minutos desde inversores de varios fabricantes, con normalización de unidades.",
+        "tech_stack": ["python_django", "postgresql", "redis"],
+        "estimated_hours": 260,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "DASH-002",
+        "name": "Panel de producción y ahorro",
+        "description": "Visualización de producción diaria y acumulada frente al consumo, con estimación de ahorro económico y huella evitada.",
+        "tech_stack": ["react", "python_django"],
+        "estimated_hours": 200,
+        "complexity": "medium",
+        "dependencies": ["TELEM-001"]
+      },
+      {
+        "component_id": "ALERT-003",
+        "name": "Alertas de bajo rendimiento",
+        "description": "Detección de caídas de producción frente al histórico esperado y aviso al servicio de mantenimiento con diagnóstico preliminar.",
+        "tech_stack": ["python_django", "celery"],
+        "estimated_hours": 160,
+        "complexity": "high",
+        "dependencies": ["TELEM-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-119",
+    "client_metadata": {"name": "IndusControl", "sector": "industrial", "country": "ES"},
+    "project_summary": "Sistema de mantenimiento predictivo para maquinaria de planta",
+    "main_technology": "python_django",
+    "year": 2023,
+    "total_estimated_hours": 700,
+    "components": [
+      {
+        "component_id": "SENS-001",
+        "name": "Recogida de datos de sensores de planta",
+        "description": "Lectura continua de vibración y temperatura desde autómatas industriales, con almacenamiento de series temporales.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "PRED-002",
+        "name": "Modelo de predicción de averías",
+        "description": "Estimación de la probabilidad de fallo por máquina a partir del histórico de sensores y de las intervenciones registradas.",
+        "tech_stack": ["python_django", "scikit_learn"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": ["SENS-001"]
+      },
+      {
+        "component_id": "ORD-003",
+        "name": "Órdenes de trabajo de mantenimiento",
+        "description": "Generación y seguimiento de órdenes preventivas y correctivas, con asignación a técnicos y registro de piezas sustituidas.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": ["PRED-002"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-120",
+    "client_metadata": {"name": "FabricaSmart", "sector": "industrial", "country": "MX"},
+    "project_summary": "Panel de control de producción en planta con seguimiento de eficiencia",
+    "main_technology": "java_spring",
+    "year": 2024,
+    "total_estimated_hours": 540,
+    "components": [
+      {
+        "component_id": "OEE-001",
+        "name": "Cálculo de eficiencia de línea",
+        "description": "Medición de disponibilidad, rendimiento y calidad por línea de producción, con desglose de causas de parada.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "SHIFT-002",
+        "name": "Parte de turno digital",
+        "description": "Registro por turno de unidades producidas, incidencias y observaciones del operario, sustituyendo el parte en papel.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 140,
+        "complexity": "medium",
+        "dependencies": ["OEE-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-121",
+    "client_metadata": {"name": "AyuntaDigital", "sector": "publicsector", "country": "ES"},
+    "project_summary": "Sede electrónica municipal con tramitación de expedientes",
+    "main_technology": "java_spring",
+    "year": 2024,
+    "total_estimated_hours": 920,
+    "components": [
+      {
+        "component_id": "IDENT-001",
+        "name": "Identificación con certificado digital",
+        "description": "Acceso del ciudadano mediante certificado electrónico y sistema Cl@ve, con firma de solicitudes y sello de tiempo.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "EXP-002",
+        "name": "Tramitación de expedientes administrativos",
+        "description": "Ciclo completo del expediente con plazos legales, notificaciones fehacientes y registro de entrada y salida.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 320,
+        "complexity": "high",
+        "dependencies": ["IDENT-001"]
+      },
+      {
+        "component_id": "PAGO-003",
+        "name": "Pago de tasas municipales",
+        "description": "Liquidación y cobro de tasas e impuestos locales con pasarela bancaria y justificante descargable para el ciudadano.",
+        "tech_stack": ["java_spring", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": ["IDENT-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-122",
+    "client_metadata": {"name": "SaludPública", "sector": "publicsector", "country": "ES"},
+    "project_summary": "Portal de cita para campañas de vacunación autonómicas",
+    "main_technology": "python_django",
+    "year": 2023,
+    "total_estimated_hours": 480,
+    "components": [
+      {
+        "component_id": "CITA-001",
+        "name": "Asignación masiva de citas por franja",
+        "description": "Reparto de citas por grupo de edad y punto de vacunación, con capacidad configurable por franja horaria y reasignación automática.",
+        "tech_stack": ["python_django", "postgresql", "celery"],
+        "estimated_hours": 220,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "CERT-002",
+        "name": "Certificado digital de vacunación",
+        "description": "Emisión del certificado con código verificable y descarga en el portal, conforme al formato europeo interoperable.",
+        "tech_stack": ["python_django", "postgresql"],
+        "estimated_hours": 160,
+        "complexity": "medium",
+        "dependencies": ["CITA-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-123",
+    "client_metadata": {"name": "RetailPuntoVenta", "sector": "ecommerce", "country": "ES"},
+    "project_summary": "Terminal de punto de venta en tienda física con sincronización de inventario",
+    "main_technology": "react_native",
+    "year": 2024,
+    "total_estimated_hours": 600,
+    "components": [
+      {
+        "component_id": "TPV-001",
+        "name": "Aplicación de punto de venta en tableta",
+        "description": "Cobro en tienda con lectura de código de barras, apertura y cierre de caja, y funcionamiento sin conexión con sincronización posterior.",
+        "tech_stack": ["react_native", "sqlite"],
+        "estimated_hours": 260,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "SYNC-002",
+        "name": "Sincronización de inventario entre tiendas",
+        "description": "Consolidación de existencias de todas las tiendas y del canal online, con resolución de conflictos por marca temporal.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 200,
+        "complexity": "high",
+        "dependencies": ["TPV-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2023-124",
+    "client_metadata": {"name": "GimnasioActivo", "sector": "hospitality", "country": "ES"},
+    "project_summary": "Aplicación móvil de gimnasio con reserva de clases y control de acceso",
+    "main_technology": "react_native",
+    "year": 2023,
+    "total_estimated_hours": 460,
+    "components": [
+      {
+        "component_id": "CLASS-001",
+        "name": "Reserva de clases dirigidas",
+        "description": "Calendario de clases con plazas limitadas, lista de espera y cancelación con penalización por ausencia reiterada.",
+        "tech_stack": ["react_native", "nodejs", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": []
+      },
+      {
+        "component_id": "ACCESS-002",
+        "name": "Control de acceso por código QR",
+        "description": "Generación de código de acceso rotativo en la aplicación y validación en el torno de entrada del centro deportivo.",
+        "tech_stack": ["react_native", "nodejs"],
+        "estimated_hours": 140,
+        "complexity": "medium",
+        "dependencies": ["CLASS-001"]
+      }
+    ]
+  },
+  {
+    "budget_id": "BUD-2024-125",
+    "client_metadata": {"name": "CargaGlobal", "sector": "logistics", "country": "ES"},
+    "project_summary": "Portal de seguimiento de envíos internacionales y documentación aduanera",
+    "main_technology": "nodejs",
+    "year": 2024,
+    "total_estimated_hours": 580,
+    "components": [
+      {
+        "component_id": "SHIP-001",
+        "name": "Seguimiento de envíos multimodal",
+        "description": "Consulta unificada del estado del envío por barco, avión y carretera, integrando eventos de varios transportistas.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 240,
+        "complexity": "high",
+        "dependencies": []
+      },
+      {
+        "component_id": "CUST-002",
+        "name": "Gestión documental de aduanas",
+        "description": "Recopilación y validación de documentación aduanera por envío, con avisos de documento pendiente antes de la llegada.",
+        "tech_stack": ["nodejs", "postgresql"],
+        "estimated_hours": 180,
+        "complexity": "medium",
+        "dependencies": ["SHIP-001"]
+      }
+    ]
+  }
+]
