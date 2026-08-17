@@ -1,0 +1,94 @@
+{
+  "annotation_criterion": "functional_domain",
+  "criterion_notes": "A chunk is relevant when its component solves the same technical problem the query describes, regardless of the client's sector. Estimation is driven by comparable engineering work, not by industry: an OAuth server costs roughly the same whether the client is a bank or a gym. Chunks that merely share vocabulary with the query (payments in a checkout vs a peer-to-peer wallet ledger) are deliberately annotated as NOT relevant — separating those is what reranking has to prove.",
+  "queries": [
+    {
+      "id": "Q1",
+      "query": "Necesitamos una tienda online con catálogo de productos, carrito de la compra y proceso de pago para vender ropa por internet",
+      "intent": "E-commerce storefront: catalogue, cart, checkout.",
+      "relevant_chunk_ids": [8, 9, 10, 11, 4, 16],
+      "relevance_notes": {
+        "8": "Product catalogue service — the core of the request.",
+        "9": "Cart and checkout — explicitly asked for.",
+        "10": "Payment gateway integration, i.e. paying at checkout.",
+        "11": "Customer-facing storefront.",
+        "4": "Product catalog service from the English seed budget, same work.",
+        "16": "Commerce API layer exposing catalogue, cart and orders."
+      },
+      "deliberate_distractors": {
+        "17": "Payment processing engine for peer-to-peer wallets — shares the word 'pago' but is a ledger, not a checkout.",
+        "63": "Municipal tax payment — also 'pago', unrelated work."
+      }
+    },
+    {
+      "id": "Q2",
+      "query": "Queremos un buscador con filtros por precio y valoración sobre un catálogo grande, que responda rápido",
+      "intent": "Faceted search over a large catalogue.",
+      "relevant_chunk_ids": [14, 8, 45, 4],
+      "relevance_notes": {
+        "14": "Faceted product search with price and rating filters — exact match.",
+        "8": "Catalogue with full-text search over product attributes.",
+        "45": "Availability and price search across providers with result normalisation and caching — same search engineering, travel sector.",
+        "4": "Catalogue with full-text search over attributes (English seed)."
+      },
+      "deliberate_distractors": {
+        "41": "Content recommendation engine — surfaces items but is not query-driven search."
+      }
+    },
+    {
+      "id": "Q3",
+      "query": "Hay que implementar login con OAuth 2.0, autenticación de doble factor y cumplir la normativa de protección de datos",
+      "intent": "Authentication, authorisation and regulatory compliance.",
+      "relevant_chunk_ids": [20, 2, 21, 3, 18, 61, 6],
+      "relevance_notes": {
+        "20": "OAuth 2.0 authorisation server — exact match.",
+        "2": "OAuth 2.0 authentication backend (English seed) — same work.",
+        "21": "PSD2 strong customer authentication, i.e. second factor plus compliance.",
+        "3": "PSD2 compliance module (English seed).",
+        "18": "Identity verification with document capture and sanctions screening.",
+        "61": "Digital certificate identification and signing — same authentication problem in the public sector.",
+        "6": "HIPAA audit log service — access logging for regulatory compliance."
+      },
+      "deliberate_distractors": {
+        "69": "QR access control for a gym turnstile — 'acceso' but physical, not OAuth.",
+        "26": "Electronic health record with GDPR access logging — compliance is incidental, the component is storage."
+      }
+    },
+    {
+      "id": "Q4",
+      "query": "Queremos una app móvil donde los usuarios reserven cita y reciban avisos, con agenda y recordatorios automáticos",
+      "intent": "Appointment booking with reminders and scheduling.",
+      "relevant_chunk_ids": [25, 64, 68, 46, 48],
+      "relevance_notes": {
+        "25": "Appointment booking with medical agendas, waiting list and SMS reminders — exact match.",
+        "64": "Mass appointment assignment by time slot with configurable capacity.",
+        "68": "Class booking with limited places, waiting list and cancellation rules.",
+        "46": "Booking engine with confirmation and cancellation handling — same reservation work.",
+        "48": "Room availability and occupancy management, i.e. booking a slot."
+      },
+      "deliberate_distractors": {
+        "27": "Video consultation — adjacent to appointments but a different component.",
+        "38": "School messaging — notifications, but not booking."
+      }
+    },
+    {
+      "id": "Q5",
+      "query": "Necesitamos un panel que reciba datos de sensores en tiempo real y avise cuando algo va mal en la instalación",
+      "intent": "Telemetry ingestion, dashboard and alerting.",
+      "relevant_chunk_ids": [53, 54, 55, 56, 57, 59, 31],
+      "relevance_notes": {
+        "53": "Inverter telemetry ingestion every five minutes with unit normalisation.",
+        "54": "Production dashboard — the panel asked for.",
+        "55": "Low-performance alerts against expected history — the alerting asked for.",
+        "56": "Continuous vibration and temperature sensor collection from plant PLCs.",
+        "57": "Failure prediction from sensor history — detecting that something is wrong.",
+        "59": "Line efficiency measurement with stoppage cause breakdown.",
+        "31": "Real-time GPS fleet ingestion with route deviation alerts — same telemetry-plus-alerting work."
+      },
+      "deliberate_distractors": {
+        "58": "Maintenance work orders — downstream of alerting, not the panel itself.",
+        "42": "Multiplatform player — real-time streaming, unrelated to sensors."
+      }
+    }
+  ]
+}
