@@ -17,11 +17,9 @@ COPY pyproject.toml uv.lock* ./
 
 # Install production dependencies only (no dev tools like pytest/ruff).
 # --no-install-project skips installing our own package (we just need deps).
-# --frozen installs exactly what uv.lock pins, so the image cannot silently
-# resolve different versions than the ones tested here. The lockfile routes
-# torch to PyTorch's CPU index on Linux, keeping ~2.5GB of unused NVIDIA CUDA
-# wheels out of the image.
-# Large wheels can exceed uv's 30s default timeout on a slow link.
+# --frozen installs exactly what uv.lock pins. The lockfile routes torch to
+# PyTorch's CPU index on Linux, keeping ~2.5GB of unused CUDA wheels out.
+# Large wheels can exceed uv's 30s default timeout.
 ENV UV_HTTP_TIMEOUT=300
 
 RUN uv sync --frozen --no-install-project --no-dev
@@ -51,10 +49,9 @@ COPY data/ /app/data/
 COPY alembic/ /app/alembic/
 COPY alembic.ini /app/alembic.ini
 
-# Ensure the non-root user owns everything it needs to run. The HuggingFace
-# cache directory is created here so the named volume mounted over it inherits
-# appuser's ownership — Docker would otherwise create it as root and the
-# reranker could not write the model it downloads.
+# Ensure the non-root user owns everything it needs to run. Creating the
+# HuggingFace cache directory here makes the volume mounted over it inherit
+# appuser's ownership; Docker would otherwise create it as root.
 RUN chown -R appuser:appgroup /app \
     && mkdir -p /home/appuser/.cache/huggingface \
     && chown -R appuser:appgroup /home/appuser/.cache

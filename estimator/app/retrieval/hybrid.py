@@ -70,13 +70,10 @@ async def vector_search(
 async def lexical_search(session: AsyncSession, query: str, limit: int) -> list[RetrievedChunk]:
     """Full-text search over the generated ``content_tsv`` column.
 
-    Queries here are natural-language project descriptions, not keyword
-    strings. ``websearch_to_tsquery`` and ``plainto_tsquery`` join every term
-    with AND, which means a sentence like "tienda online con catálogo de
-    productos y carrito de la compra" matches nothing — no single chunk
-    contains all of those words. ``to_tsquery`` over OR-joined lexemes keeps
-    recall, and ``ts_rank_cd`` sorts by how many distinct terms a chunk
-    actually covers.
+    Queries are natural-language project descriptions. Postgres' query parsers
+    join terms with AND, so a whole sentence matches nothing — no chunk holds
+    every word. OR-joined lexemes keep recall, and ``ts_rank_cd`` ranks by how
+    many distinct terms a chunk covers.
     """
     tsquery = func.to_tsquery(
         TEXT_SEARCH_CONFIG,
