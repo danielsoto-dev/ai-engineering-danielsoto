@@ -17,8 +17,12 @@ COPY pyproject.toml uv.lock* ./
 
 # Install production dependencies only (no dev tools like pytest/ruff).
 # --no-install-project skips installing our own package (we just need deps).
-# uv will generate the lockfile if it doesn't exist yet.
-RUN uv sync --no-install-project --no-dev
+# --frozen installs exactly what uv.lock pins. The lockfile routes torch to
+# PyTorch's CPU index on Linux, keeping ~2.5GB of unused CUDA wheels out.
+# Large wheels can exceed uv's 30s default timeout.
+ENV UV_HTTP_TIMEOUT=300
+
+RUN uv sync --frozen --no-install-project --no-dev
 
 
 # =============================================================================
@@ -45,8 +49,12 @@ COPY data/ /app/data/
 COPY alembic/ /app/alembic/
 COPY alembic.ini /app/alembic.ini
 
-# Ensure the non-root user owns everything it needs to run.
-RUN chown -R appuser:appgroup /app
+# Ensure the non-root user owns everything it needs to run. Creating the
+# HuggingFace cache directory here makes the volume mounted over it inherit
+# appuser's ownership; Docker would otherwise create it as root.
+RUN chown -R appuser:appgroup /app \
+    && mkdir -p /home/appuser/.cache/huggingface \
+    && chown -R appuser:appgroup /home/appuser/.cache
 
 # Put the virtual environment's bin directory first on PATH so `python` and
 # `uvicorn` resolve to the versions installed inside the venv.

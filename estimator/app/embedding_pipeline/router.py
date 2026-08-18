@@ -21,6 +21,8 @@ from app.embedding_pipeline.schemas import (
     SearchResponse,
     SearchResult,
 )
+from app.retrieval.hybrid import lexical_search, reciprocal_rank_fusion, vector_search
+from app.retrieval.reranker import rerank
 
 log = structlog.get_logger()
 
@@ -89,37 +91,53 @@ async def search(
 ) -> SearchResponse:
     t0 = time.perf_counter()
 
-    query_vector = OpenAIEmbedder().embed_one(request.query)
+    # Reranking only pays off if it gets more candidates than the caller wants
+    # back: recall wide, then let the cross-encoder pick.
+    retrieval_limit = max(request.candidate_k, request.k) if request.rerank else request.k
 
-    distance = ChunkRow.embedding.cosine_distance(query_vector).label("distance")
-    stmt = (
-        select(
-            ChunkRow.id,
-            ChunkRow.document_id,
-            ChunkRow.chunk_type,
-            ChunkRow.content,
-            ChunkRow.chunk_metadata,
-            distance,
-        )
-        .order_by(distance)
-        .limit(request.k)
-    )
-    rows = (await session.execute(stmt)).all()
+    query_vector = OpenAIEmbedder().embed_one(request.query)
+    ranked = await vector_search(session, query_vector, retrieval_limit)
+
+    if request.mode == "hybrid":
+        lexical = await lexical_search(session, request.query, retrieval_limit)
+        ranked = reciprocal_rank_fusion([ranked, lexical], k=request.rrf_k)
+
+    candidates_considered = len(ranked)
+
+    if request.rerank:
+        ranked = rerank(request.query, ranked, top_k=request.k)
+    else:
+        ranked = ranked[: request.k]
 
     search_time_ms = int((time.perf_counter() - t0) * 1000)
+    log.info(
+        "search_completed",
+        mode=request.mode,
+        reranked=request.rerank,
+        candidates=candidates_considered,
+        returned=len(ranked),
+        search_time_ms=search_time_ms,
+    )
     return SearchResponse(
         query=request.query,
         k=request.k,
+        mode=request.mode,
+        reranked=request.rerank,
+        candidates_considered=candidates_considered,
         search_time_ms=search_time_ms,
         results=[
             SearchResult(
-                chunk_id=row.id,
-                document_id=row.document_id,
-                chunk_type=row.chunk_type,
-                content=row.content,
-                distance=row.distance,
-                metadata=row.chunk_metadata,
+                chunk_id=chunk.chunk_id,
+                document_id=chunk.document_id,
+                chunk_type=chunk.chunk_type,
+                content=chunk.content,
+                distance=chunk.vector_distance,
+                metadata=chunk.metadata,
+                lexical_rank_score=chunk.lexical_rank_score,
+                fusion_score=chunk.fusion_score,
+                rerank_score=chunk.rerank_score,
+                sources=chunk.sources,
             )
-            for row in rows
+            for chunk in ranked
         ],
     )
