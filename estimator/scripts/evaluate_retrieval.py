@@ -36,15 +36,15 @@ if "@postgres:" in os.environ.get("DATABASE_URL", ""):
         "@postgres:5432", "@localhost:5433"
     )
 
-from app.db.session import get_sessionmaker  # noqa: E402
-from app.embedding_pipeline.embedder import OpenAIEmbedder  # noqa: E402
-from app.retrieval.hybrid import (  # noqa: E402
+from app.db.session import get_sessionmaker
+from app.embedding_pipeline.embedder import OpenAIEmbedder
+from app.retrieval.hybrid import (
     RetrievedChunk,
     lexical_search,
     reciprocal_rank_fusion,
     vector_search,
 )
-from app.retrieval.reranker import rerank  # noqa: E402
+from app.retrieval.reranker import rerank
 
 GOLDEN_SET_PATH = Path("evals/retrieval_golden_set.json")
 REPORT_PATH = Path("evals/retrieval_results.md")
@@ -144,8 +144,10 @@ def _write_report(results: dict, per_query: list[dict], queries: list[dict]) -> 
     lines = [
         "# Retrieval evaluation — Session 10",
         "",
-        f"Golden set: {len(queries)} queries, criterion `functional_domain`. "
-        f"top-k = {TOP_K}, recall depth for reranking = {CANDIDATE_K}.",
+        (
+            f"Golden set: {len(queries)} queries, criterion `functional_domain`. "
+            f"top-k = {TOP_K}, recall depth for reranking = {CANDIDATE_K}."
+        ),
         "",
         "## Comparative table",
         "",

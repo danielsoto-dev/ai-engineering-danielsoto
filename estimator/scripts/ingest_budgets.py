@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 
 import httpx
 
@@ -15,7 +16,7 @@ BASE_URL = "http://localhost:8000"
 
 
 def main(path: str) -> int:
-    budgets = json.loads(open(path, encoding="utf-8").read())
+    budgets = json.loads(Path(path).read_text(encoding="utf-8"))
     ingested = skipped = 0
 
     with httpx.Client(base_url=BASE_URL, timeout=120.0) as client:
