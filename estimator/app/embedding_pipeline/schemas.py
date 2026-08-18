@@ -12,7 +12,20 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 Complexity = Literal["low", "medium", "high"]
-Sector = Literal["finance", "ecommerce", "healthcare", "industrial"]
+Sector = Literal[
+    "finance",
+    "ecommerce",
+    "healthcare",
+    "industrial",
+    "logistics",
+    "education",
+    "media",
+    "travel",
+    "realestate",
+    "energy",
+    "publicsector",
+    "hospitality",
+]
 
 
 class ClientMetadata(BaseModel):
@@ -65,9 +78,17 @@ class IngestDocumentResponse(BaseModel):
     ingestion_time_ms: int
 
 
+SearchMode = Literal["vector", "hybrid"]
+
+
 class SearchRequest(BaseModel):
     query: str
     k: int = 5
+    mode: SearchMode = "vector"
+    rerank: bool = False
+    # Recall depth fed to the reranker. Ignored when rerank is false.
+    candidate_k: int = 50
+    rrf_k: int = 60
 
 
 class SearchResult(BaseModel):
@@ -75,12 +96,19 @@ class SearchResult(BaseModel):
     document_id: int
     chunk_type: str
     content: str
-    distance: float
+    distance: float | None = None
     metadata: dict
+    lexical_rank_score: float | None = None
+    fusion_score: float | None = None
+    rerank_score: float | None = None
+    sources: list[str] = Field(default_factory=list)
 
 
 class SearchResponse(BaseModel):
     query: str
     k: int
+    mode: SearchMode
+    reranked: bool
+    candidates_considered: int
     search_time_ms: int
     results: list[SearchResult]
