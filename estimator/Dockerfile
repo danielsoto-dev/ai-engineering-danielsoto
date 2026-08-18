@@ -18,7 +18,14 @@ COPY pyproject.toml uv.lock* ./
 # Install production dependencies only (no dev tools like pytest/ruff).
 # --no-install-project skips installing our own package (we just need deps).
 # uv will generate the lockfile if it doesn't exist yet.
-RUN uv sync --no-install-project --no-dev
+# Large wheels (torch) can exceed the 30s default on a slow link.
+ENV UV_HTTP_TIMEOUT=300
+
+# Resolve everything except torch, which the lockfile points at PyPI. On Linux
+# that build bundles ~2.5GB of NVIDIA CUDA libraries, and this image has no GPU
+# to load them on, so torch is swapped for the CPU-only wheel afterwards.
+RUN uv sync --no-install-project --no-dev --no-install-package torch
+RUN uv pip install --index-url https://download.pytorch.org/whl/cpu torch
 
 
 # =============================================================================
