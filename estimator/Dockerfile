@@ -51,8 +51,13 @@ COPY data/ /app/data/
 COPY alembic/ /app/alembic/
 COPY alembic.ini /app/alembic.ini
 
-# Ensure the non-root user owns everything it needs to run.
-RUN chown -R appuser:appgroup /app
+# Ensure the non-root user owns everything it needs to run. The HuggingFace
+# cache directory is created here so the named volume mounted over it inherits
+# appuser's ownership — Docker would otherwise create it as root and the
+# reranker could not write the model it downloads.
+RUN chown -R appuser:appgroup /app \
+    && mkdir -p /home/appuser/.cache/huggingface \
+    && chown -R appuser:appgroup /home/appuser/.cache
 
 # Put the virtual environment's bin directory first on PATH so `python` and
 # `uvicorn` resolve to the versions installed inside the venv.
