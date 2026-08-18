@@ -11,8 +11,8 @@ from __future__ import annotations
 import datetime as dt
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, String, Text, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import BigInteger, Computed, DateTime, ForeignKey, Index, String, Text, func
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 EMBEDDING_DIMENSION = 1536  # text-embedding-3-small
@@ -57,6 +57,11 @@ class Chunk(Base):
     chunk_metadata: Mapped[dict] = mapped_column(
         "metadata", JSONB, server_default="{}", nullable=False
     )
+    content_tsv: Mapped[str] = mapped_column(
+        TSVECTOR,
+        Computed("to_tsvector('spanish', content)", persisted=True),
+        nullable=True,
+    )
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -67,4 +72,5 @@ class Chunk(Base):
         Index("ix_chunks_document_id", "document_id"),
         Index("ix_chunks_chunk_type", "chunk_type"),
         Index("ix_chunks_metadata_gin", "metadata", postgresql_using="gin"),
+        Index("ix_chunks_content_tsv", "content_tsv", postgresql_using="gin"),
     )
