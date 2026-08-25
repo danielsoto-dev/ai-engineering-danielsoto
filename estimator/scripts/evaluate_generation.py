@@ -64,7 +64,7 @@ async def run_pipeline() -> list[dict]:
                     "answer": outcome.estimate.as_text(),
                     "contexts": outcome.context.contexts,
                     "ground_truth": case["ground_truth"],
-                    "retrieved_chunk_ids": sorted(outcome.context.chunk_ids),
+                    "retrieved_chunk_ids": outcome.context.sorted_chunk_ids,
                     "citations": report.as_dict(),
                     "lines": [
                         {

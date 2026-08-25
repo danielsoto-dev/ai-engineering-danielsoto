@@ -221,3 +221,45 @@ class GroundedEstimate(BaseModel):
         lines.append("")
         lines.append(f"Total: {self.total_hours:g} horas.")
         return "\n".join(lines)
+
+
+class GroundedEstimationRequest(BaseModel):
+    """Free-text project description to estimate against historical budgets."""
+
+    description: str = Field(
+        min_length=20,
+        max_length=80000,
+        description="Description or transcription of the project to estimate.",
+    )
+
+
+class CitedLine(BaseModel):
+    """Per-line verification verdict returned alongside the estimate."""
+
+    component: str
+    status: str = Field(description="grounded | dangling | insufficient_context")
+    cited_chunk_ids: list[str] = Field(default_factory=list)
+    dangling_chunk_ids: list[str] = Field(default_factory=list)
+
+
+class CitationSummary(BaseModel):
+    lines: int
+    grounded: int
+    dangling: int
+    insufficient_context: int
+    grounding_rate: float
+    is_valid: bool = Field(description="False when any line cites a chunk never retrieved.")
+
+
+class GroundedEstimationResponse(BaseModel):
+    """The estimate, its per-line verification, and the context it was given.
+
+    The HTTP contract is unchanged in shape — the body is enriched with the
+    sources behind each line so a consumer can audit the estimate instead of
+    trusting it.
+    """
+
+    estimate: GroundedEstimate
+    citations: CitationSummary
+    verified_lines: list[CitedLine]
+    retrieved_chunk_ids: list[str]

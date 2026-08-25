@@ -43,6 +43,12 @@ class AssembledContext:
         """Chunk contents, the shape RAGAS expects for ``contexts``."""
         return [chunk.content for chunk in self.chunks]
 
+    @property
+    def sorted_chunk_ids(self) -> list[str]:
+        """Ids in numeric order. Plain ``sorted`` compares them as strings and
+        renders ``['11', '4']``, which reads as a mistake in logs and reports."""
+        return sorted(self.chunk_ids, key=int)
+
 
 def format_chunk(chunk: RetrievedChunk) -> str:
     """Label a chunk with the id the model must cite."""
@@ -84,7 +90,7 @@ async def assemble_context(
     context = render_context(ranked)
     log.info(
         "context_assembled",
-        chunk_ids=sorted(context.chunk_ids),
+        chunk_ids=context.sorted_chunk_ids,
         rerank=use_rerank,
         chunks=len(ranked),
     )

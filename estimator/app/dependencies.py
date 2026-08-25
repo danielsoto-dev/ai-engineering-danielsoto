@@ -12,6 +12,7 @@ from app.cache.semantic import EstimationSemanticCache
 from app.config import get_settings
 from app.services.cache import EstimationCache
 from app.services.estimation import EstimationService
+from app.services.grounded_estimation import GroundedEstimationService
 from app.services.llm_wrapper import LLMWrapper
 from app.sessions.store import SessionStore
 
@@ -112,3 +113,8 @@ def get_session_store() -> SessionStore:
     """
     settings = get_settings()
     return SessionStore(max_turns=settings.MAX_CONVERSATION_TURNS)
+
+
+@lru_cache
+def get_grounded_estimation_service() -> GroundedEstimationService:
+    return GroundedEstimationService(llm_wrapper=get_llm_wrapper())
