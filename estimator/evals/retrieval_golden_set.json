@@ -6,7 +6,14 @@
       "id": "Q1",
       "query": "Necesitamos una tienda online con catálogo de productos, carrito de la compra y proceso de pago para vender ropa por internet",
       "intent": "E-commerce storefront: catalogue, cart, checkout.",
-      "relevant_chunk_ids": [8, 9, 10, 11, 4, 16],
+      "relevant_chunk_ids": [
+        8,
+        9,
+        10,
+        11,
+        4,
+        16
+      ],
       "relevance_notes": {
         "8": "Product catalogue service — the core of the request.",
         "9": "Cart and checkout — explicitly asked for.",
@@ -18,13 +25,20 @@
       "deliberate_distractors": {
         "17": "Payment processing engine for peer-to-peer wallets — shares the word 'pago' but is a ledger, not a checkout.",
         "63": "Municipal tax payment — also 'pago', unrelated work."
-      }
+      },
+      "ground_truth": "Tienda online completa a partir de presupuestos de e-commerce históricos. Servicio de catálogo de productos: 220 h (chunk 8). Carrito de la compra y proceso de checkout: 180 h (chunk 9). Integración de pasarela de pago: 140 h (chunk 10). Escaparate web de cliente: 280 h (chunk 11). Capa de API de comercio: 200 h (chunk 16). Total aproximado: 1.020 h. El presupuesto en inglés de catálogo (chunk 4, 200 h) confirma el orden de magnitud del catálogo. No hay datos de logística ni de gestión de devoluciones, así que esas piezas quedan sin soporte.",
+      "ground_truth_hours": 1020
     },
     {
       "id": "Q2",
       "query": "Queremos un buscador con filtros por precio y valoración sobre un catálogo grande, que responda rápido",
       "intent": "Faceted search over a large catalogue.",
-      "relevant_chunk_ids": [14, 8, 45, 4],
+      "relevant_chunk_ids": [
+        14,
+        8,
+        45,
+        4
+      ],
       "relevance_notes": {
         "14": "Faceted product search with price and rating filters — exact match.",
         "8": "Catalogue with full-text search over product attributes.",
@@ -33,13 +47,23 @@
       },
       "deliberate_distractors": {
         "41": "Content recommendation engine — surfaces items but is not query-driven search."
-      }
+      },
+      "ground_truth": "Buscador con facetas sobre un catálogo grande. Buscador de productos con facetas: 180 h (chunk 14), que es el componente directamente equivalente y cubre filtros por atributo. Servicio de catálogo de productos: 220 h (chunk 8) como fuente indexable. El buscador de disponibilidad y precios (chunk 45, 280 h) es de viajes y sirve sólo como referencia de un buscador con filtros de precio y baja latencia. Total aproximado para buscador más indexación de catálogo: 400 h. El requisito de 'responder rápido' no tiene un componente de rendimiento presupuestado por separado en el corpus.",
+      "ground_truth_hours": 400
     },
     {
       "id": "Q3",
       "query": "Hay que implementar login con OAuth 2.0, autenticación de doble factor y cumplir la normativa de protección de datos",
       "intent": "Authentication, authorisation and regulatory compliance.",
-      "relevant_chunk_ids": [20, 2, 21, 3, 18, 61, 6],
+      "relevant_chunk_ids": [
+        20,
+        2,
+        21,
+        3,
+        18,
+        61,
+        6
+      ],
       "relevance_notes": {
         "20": "OAuth 2.0 authorisation server — exact match.",
         "2": "OAuth 2.0 authentication backend (English seed) — same work.",
@@ -52,13 +76,21 @@
       "deliberate_distractors": {
         "69": "QR access control for a gym turnstile — 'acceso' but physical, not OAuth.",
         "26": "Electronic health record with GDPR access logging — compliance is incidental, the component is storage."
-      }
+      },
+      "ground_truth": "Autenticación, doble factor y cumplimiento normativo. Servidor de autorización OAuth 2.0: 200 h (chunk 20), con el backend OAuth 2.0 en inglés (chunk 2, 120 h) como segunda referencia. Verificación de identidad del usuario: 180 h (chunk 18) e identificación con certificado digital: 240 h (chunk 61) cubren el segundo factor. Cumplimiento: módulo PSD2 240 h (chunk 21) o su equivalente en inglés (chunk 3, 160 h); el servicio de auditoría HIPAA (chunk 6, 100 h) aporta la parte de trazabilidad exigible en protección de datos. Total aproximado: 620-860 h según se exija PSD2 o sólo RGPD. El corpus no contiene un componente específico de RGPD.",
+      "ground_truth_hours": 720
     },
     {
       "id": "Q4",
       "query": "Queremos una app móvil donde los usuarios reserven cita y reciban avisos, con agenda y recordatorios automáticos",
       "intent": "Appointment booking with reminders and scheduling.",
-      "relevant_chunk_ids": [25, 64, 68, 46, 48],
+      "relevant_chunk_ids": [
+        25,
+        64,
+        68,
+        46,
+        48
+      ],
       "relevance_notes": {
         "25": "Appointment booking with medical agendas, waiting list and SMS reminders — exact match.",
         "64": "Mass appointment assignment by time slot with configurable capacity.",
@@ -69,13 +101,23 @@
       "deliberate_distractors": {
         "27": "Video consultation — adjacent to appointments but a different component.",
         "38": "School messaging — notifications, but not booking."
-      }
+      },
+      "ground_truth": "App móvil de reserva de cita con avisos y agenda. Sistema de cita previa: 220 h (chunk 25) es el componente central. Asignación masiva de citas por franja: 220 h (chunk 64) cubre la agenda y la gestión de franjas horarias. Reserva de clases dirigidas: 180 h (chunk 68) y motor de reservas y emisión: 240 h (chunk 46) son referencias de flujo de reserva. Total aproximado para cita previa más agenda: 440 h. Los recordatorios automáticos y las notificaciones push no aparecen como componente presupuestado en el corpus: deberían marcarse sin datos suficientes.",
+      "ground_truth_hours": 440
     },
     {
       "id": "Q5",
       "query": "Necesitamos un panel que reciba datos de sensores en tiempo real y avise cuando algo va mal en la instalación",
       "intent": "Telemetry ingestion, dashboard and alerting.",
-      "relevant_chunk_ids": [53, 54, 55, 56, 57, 59, 31],
+      "relevant_chunk_ids": [
+        53,
+        54,
+        55,
+        56,
+        57,
+        59,
+        31
+      ],
       "relevance_notes": {
         "53": "Inverter telemetry ingestion every five minutes with unit normalisation.",
         "54": "Production dashboard — the panel asked for.",
@@ -88,7 +130,10 @@
       "deliberate_distractors": {
         "58": "Maintenance work orders — downstream of alerting, not the panel itself.",
         "42": "Multiplatform player — real-time streaming, unrelated to sensors."
-      }
+      },
+      "ground_truth": "Panel de telemetría en tiempo real con alertas. Ingesta: recogida de datos de sensores de planta 240 h (chunk 56) o ingesta de telemetría de inversores 260 h (chunk 53). Panel de producción y ahorro: 200 h (chunk 54) para la visualización. Alertas de bajo rendimiento: 160 h (chunk 55) para el aviso cuando algo va mal. Total aproximado: 600-620 h. El cálculo de eficiencia de línea (chunk 59, 220 h) y el modelo de predicción de averías (chunk 57, 220 h) son ampliaciones analíticas que el enunciado no pide; el seguimiento de vehículos (chunk 31) es de otro dominio.",
+      "ground_truth_hours": 610
     }
-  ]
+  ],
+  "ground_truth_notes": "Reference estimates for Session 11 RAGAS evaluation. Hours are taken from the 'Estimated hours' figures recorded in the cited chunks, so the reference reflects the corpus instead of invented numbers. Each entry names the components the corpus cannot support, which is what the grounded=False path should produce."
 }

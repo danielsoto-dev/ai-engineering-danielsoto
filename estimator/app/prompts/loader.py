@@ -151,3 +151,21 @@ def render_metadata_extraction_prompt(
     system = _env.get_template(f"metadata_extraction/{version}/system.j2").render(**context)
     user = _env.get_template(f"metadata_extraction/{version}/user.j2").render(**context)
     return system, user
+
+
+def render_grounded_estimation_prompt(
+    *,
+    description: str,
+    context: str,
+    version: str = "v1",
+) -> tuple[str, str]:
+    """Render the per-line attribution prompt for the grounded estimator.
+
+    ``context`` is the block produced by ``assemble_context``, where each chunk
+    is already labelled with the id the model is required to cite.
+    """
+    system = _env.get_template(f"grounded_estimation/{version}/system.j2").render()
+    user = _env.get_template(f"grounded_estimation/{version}/user.j2").render(
+        description=description, context=context
+    )
+    return system, user
