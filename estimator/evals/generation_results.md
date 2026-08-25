@@ -25,20 +25,18 @@ Judge: `gpt-4o-mini`. Embeddings: `text-embedding-3-small`. Retrieval: hybrid (v
 
 ## Nota sobre los números
 
-Lo que más chirría es el **answer relevancy medio de 0,25, con dos ceros absolutos (Q2 y Q3)**: las
-respuestas son claramente pertinentes, pero RAGAS anula la métrica cuando su juez marca la respuesta
-como *noncommittal*, y nuestra política de citación obliga precisamente a decir "no hay datos
-suficientes". La honestidad que pide el enunciado se penaliza como evasión, así que este 0,25 mide el
-choque entre dos criterios, no la calidad real de la generación.
+**El answer relevancy de 0,25, con dos ceros absolutos (Q2 y Q3), es un artefacto de la métrica.**
+RAGAS la anula cuando su juez marca la respuesta como *noncommittal*, y nuestra política de citación
+obliga a decir "no hay datos suficientes". Las respuestas de Q2 y Q3 son perfectamente pertinentes:
+el 0,00 sale de que empiezan declarando lo que el contexto no soporta. La honestidad que pide el
+enunciado se penaliza como evasión.
 
-El segundo problema es el **context recall de 0,57**, muy bajo en Q3 (0,33) y Q1 (0,44): con top-k 5
-sobre presupuestos que aportan 2 chunks cada uno, no caben todos los componentes que la referencia
-espera. Se ve en las horas: Q1 estima 400 h frente a 1.020 h de referencia y Q3 120 h frente a 720 h,
-no por inventar de menos sino porque los chunks de pago, escaparate o cumplimiento nunca llegaron al
-generador. La precisión es casi perfecta (0,98): lo que recuperamos es relevante, pero recuperamos
-poco.
+**El context recall de 0,57 sí es un problema real** (Q3 en 0,33, Q1 en 0,44). Con top-k 5 sobre
+presupuestos que aportan 2 chunks cada uno no caben todos los componentes que espera la referencia.
+Se ve en las horas: Q1 estima 400 h frente a 1.020 h, no por inventar de menos, sino porque los
+chunks de pago y escaparate nunca llegaron al generador. La precisión es 0,98 — lo poco que
+recuperamos es relevante.
 
-**Faithfulness 0,65** es el número más honesto y el más mejorable — sobre todo Q4 (0,31), donde el
-modelo justifica una cita correcta con prosa que va más allá de lo que el chunk dice literalmente.
-Ninguna de las 10 líneas generadas produjo una citación colgante, así que el fallo no es inventarse
-fuentes, sino razonar de más sobre fuentes reales.
+**Faithfulness 0,65** es lo más mejorable, sobre todo Q4 (0,31), donde el modelo justifica una cita
+correcta con prosa que va más allá de lo que dice el chunk. Cero citaciones colgantes: el fallo no es
+inventarse fuentes, es razonar de más sobre fuentes reales.

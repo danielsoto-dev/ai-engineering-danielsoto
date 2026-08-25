@@ -45,6 +45,9 @@ EMBEDDING_MODEL = "text-embedding-3-small"
 
 METRIC_NAMES = ["faithfulness", "answer_relevancy", "context_precision", "context_recall"]
 
+# Everything from this heading onward is written by hand and survives a rerun.
+NOTE_HEADING = "## Nota sobre los n\u00fameros"
+
 
 async def run_pipeline() -> list[dict]:
     """Generate one grounded estimate per golden query."""
@@ -170,6 +173,13 @@ def write_report(rows: list[dict], metrics: dict[str, list[float]]) -> None:
             f"| {c['insufficient_context']} | {row['total_hours']:g} "
             f"| {row['ground_truth_hours']} |"
         )
+
+    # The hand-written note is a deliverable; carry it over so a rerun refreshes
+    # the numbers without deleting the analysis of them.
+    if REPORT_PATH.exists():
+        _, marker, note = REPORT_PATH.read_text(encoding="utf-8").partition(NOTE_HEADING)
+        if marker:
+            lines += ["", marker + note.rstrip("\n")]
 
     REPORT_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
