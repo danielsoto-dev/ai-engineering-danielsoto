@@ -163,7 +163,7 @@ def write_report(rows: list[dict], metrics: dict[str, list[float]]) -> None:
         "",
         "## Citation verification",
         "",
-        "| Query | Líneas | Fundamentadas | Colgantes | Sin datos | Horas | Horas ref. |",
+        "| Query | Líneas | Con fuente | Chunk inexistente | Sin datos | Horas | Horas ref. |",
         "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in rows:

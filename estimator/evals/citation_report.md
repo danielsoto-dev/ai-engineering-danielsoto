@@ -18,7 +18,7 @@ Total: 400 horas.
 
 Chunks entregados al LLM: `['4', '8', '9', '11', '16']`
 
-| Línea | Estado | Cita | Colgantes |
+| Línea | Estado | Cita | No recuperado |
 | --- | --- | --- | --- |
 | Catálogo de productos | `grounded` | 8 | — |
 | Carrito de la compra y proceso de checkout | `grounded` | 9 | — |
@@ -30,7 +30,7 @@ Resumen: `{'lines': 3, 'grounded': 2, 'dangling': 0, 'insufficient_context': 1, 
 
 Chunks entregados al LLM: `['4', '8', '9', '11', '16']`
 
-| Línea | Estado | Cita | Colgantes |
+| Línea | Estado | Cita | No recuperado |
 | --- | --- | --- | --- |
 | Catálogo de productos | `dangling` | 9999 | 9999 |
 | Carrito de la compra y proceso de checkout | `grounded` | 9 | — |

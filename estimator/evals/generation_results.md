@@ -15,7 +15,7 @@ Judge: `gpt-4o-mini`. Embeddings: `text-embedding-3-small`. Retrieval: hybrid (v
 
 ## Citation verification
 
-| Query | Líneas | Fundamentadas | Colgantes | Sin datos | Horas | Horas ref. |
+| Query | Líneas | Con fuente | Chunk inexistente | Sin datos | Horas | Horas ref. |
 | --- | --- | --- | --- | --- | --- | --- |
 | Q1 | 2 | 2 | 0 | 0 | 400 | 1020 |
 | Q2 | 1 | 1 | 0 | 0 | 180 | 400 |
@@ -25,18 +25,18 @@ Judge: `gpt-4o-mini`. Embeddings: `text-embedding-3-small`. Retrieval: hybrid (v
 
 ## Nota sobre los números
 
-**El answer relevancy de 0,25, con dos ceros absolutos (Q2 y Q3), es un artefacto de la métrica.**
-RAGAS la anula cuando su juez marca la respuesta como *noncommittal*, y para citar bien hay que
-decir "no tengo datos suficientes". Las respuestas de Q2 y Q3 son perfectamente pertinentes: el 0,00
-sale de que empiezan diciendo lo que el contexto no cubre. La honestidad que pide el enunciado se
-penaliza como evasión.
+Corriendo los experimentos me llamó la atención el answer relevancy: 0,25 de media y dos consultas
+en 0,00. Fui a mirar esas respuestas y estaban bien, hablaban justo de lo que se les preguntaba.
+Revisando el código de RAGAS creo que la razón es que el juez las marca como noncommittal, porque
+empiezan diciendo de qué no tienen datos, y ahí la métrica se va directa a cero. Si es eso, me
+imagino que le pasará a cualquiera que haya implementado la política de insufficient context.
 
-**El context recall de 0,57 sí es un problema real** (Q3 en 0,33, Q1 en 0,44). Con top-k 5 sobre
-presupuestos que aportan 2 chunks cada uno no caben todos los componentes que espera la referencia.
-Se ve en las horas: Q1 estima 400 h frente a 1.020 h, no por inventar de menos, sino porque los
-chunks de pago y escaparate nunca llegaron al generador. La precisión es 0,98 — lo poco que
-recuperamos es relevante.
+El otro que me llamó la atención fue el context recall, 0,57. Ese sí me parece un problema mío de
+configuración: con top-k 5 y presupuestos que aportan 2 chunks cada uno no entran todos los
+componentes, y por eso Q1 me da 400 h cuando la referencia son 1.020 h, los chunks de pago y
+escaparate directamente nunca le llegaron al generador. La precisión en cambio es 0,98, así que lo
+poco que recupero es relevante.
 
-**Faithfulness 0,65** es lo más mejorable, sobre todo Q4 (0,31), donde el modelo cita bien pero
-luego se va por las ramas justificándolo. Ninguna línea citó un chunk inexistente: el fallo no es
-inventarse fuentes, es razonar de más sobre fuentes reales.
+El faithfulness de 0,65 es lo que más margen tiene, sobre todo Q4 con 0,31, donde el modelo cita
+bien pero luego se va por las ramas justificándolo. Ninguna línea citó un chunk que no existiera,
+así que el problema no es inventarse fuentes, es razonar de más sobre fuentes reales.

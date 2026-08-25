@@ -40,7 +40,7 @@ def _render(title: str, report, chunk_ids: set[str]) -> list[str]:
         "",
         f"Chunks entregados al LLM: `{sorted(chunk_ids, key=int)}`",
         "",
-        "| Línea | Estado | Cita | Colgantes |",
+        "| Línea | Estado | Cita | No recuperado |",
         "| --- | --- | --- | --- |",
     ]
     for verdict in report.verdicts:
