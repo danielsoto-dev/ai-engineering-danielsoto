@@ -87,7 +87,7 @@ async def main() -> int:
         tampered, outcome.context.chunk_ids, request_id=f"{case['id']}-TAMPERED"
     )
     out += _render(
-        f"Verificación con una citación colgante inyectada (`{FABRICATED_CHUNK_ID}`)",
+        f"Verificación metiendo a mano una cita a un chunk inexistente (`{FABRICATED_CHUNK_ID}`)",
         tampered_report,
         outcome.context.chunk_ids,
     )

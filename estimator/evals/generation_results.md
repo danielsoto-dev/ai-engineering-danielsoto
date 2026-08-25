@@ -26,10 +26,10 @@ Judge: `gpt-4o-mini`. Embeddings: `text-embedding-3-small`. Retrieval: hybrid (v
 ## Nota sobre los números
 
 **El answer relevancy de 0,25, con dos ceros absolutos (Q2 y Q3), es un artefacto de la métrica.**
-RAGAS la anula cuando su juez marca la respuesta como *noncommittal*, y nuestra política de citación
-obliga a decir "no hay datos suficientes". Las respuestas de Q2 y Q3 son perfectamente pertinentes:
-el 0,00 sale de que empiezan declarando lo que el contexto no soporta. La honestidad que pide el
-enunciado se penaliza como evasión.
+RAGAS la anula cuando su juez marca la respuesta como *noncommittal*, y para citar bien hay que
+decir "no tengo datos suficientes". Las respuestas de Q2 y Q3 son perfectamente pertinentes: el 0,00
+sale de que empiezan diciendo lo que el contexto no cubre. La honestidad que pide el enunciado se
+penaliza como evasión.
 
 **El context recall de 0,57 sí es un problema real** (Q3 en 0,33, Q1 en 0,44). Con top-k 5 sobre
 presupuestos que aportan 2 chunks cada uno no caben todos los componentes que espera la referencia.
@@ -37,6 +37,6 @@ Se ve en las horas: Q1 estima 400 h frente a 1.020 h, no por inventar de menos, 
 chunks de pago y escaparate nunca llegaron al generador. La precisión es 0,98 — lo poco que
 recuperamos es relevante.
 
-**Faithfulness 0,65** es lo más mejorable, sobre todo Q4 (0,31), donde el modelo justifica una cita
-correcta con prosa que va más allá de lo que dice el chunk. Cero citaciones colgantes: el fallo no es
+**Faithfulness 0,65** es lo más mejorable, sobre todo Q4 (0,31), donde el modelo cita bien pero
+luego se va por las ramas justificándolo. Ninguna línea citó un chunk inexistente: el fallo no es
 inventarse fuentes, es razonar de más sobre fuentes reales.

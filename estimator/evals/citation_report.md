@@ -26,7 +26,7 @@ Chunks entregados al LLM: `['4', '8', '9', '11', '16']`
 
 Resumen: `{'lines': 3, 'grounded': 2, 'dangling': 0, 'insufficient_context': 1, 'grounding_rate': 0.667, 'is_valid': True}`
 
-## Verificación con una citación colgante inyectada (`9999`)
+## Verificación metiendo a mano una cita a un chunk inexistente (`9999`)
 
 Chunks entregados al LLM: `['4', '8', '9', '11', '16']`
 
