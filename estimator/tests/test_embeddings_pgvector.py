@@ -8,12 +8,13 @@ and free. Skips automatically if Postgres isn't reachable.
 
 from __future__ import annotations
 
+import os
+
 import pytest
 import sqlalchemy
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.config import get_settings
 from app.db.session import get_db_session
 from app.embedding_pipeline import router as embeddings_router_module
 from app.main import app
@@ -65,7 +66,18 @@ async def clean_db():
     connections across the different event loops that pytest-asyncio and
     ``TestClient`` each run.
     """
-    engine = create_async_engine(get_settings().DATABASE_URL)
+    # TRUNCATE destroys whatever database it points at, so this fixture refuses
+    # to run against the dev corpus unless TEST_DATABASE_URL names a throwaway
+    # one explicitly. Re-ingesting after an accidental wipe costs real embedding
+    # calls, which is not something a test run should ever trigger.
+    test_url = os.environ.get("TEST_DATABASE_URL")
+    if not test_url:
+        pytest.skip(
+            "set TEST_DATABASE_URL to a disposable database to run the pgvector "
+            "tests; they TRUNCATE documents and chunks"
+        )
+
+    engine = create_async_engine(test_url)
     try:
         async with engine.connect() as conn:
             await conn.execute(

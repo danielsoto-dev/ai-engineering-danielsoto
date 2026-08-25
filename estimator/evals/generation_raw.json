@@ -1,0 +1,268 @@
+[
+  {
+    "query_id": "Q1",
+    "question": "Necesitamos una tienda online con catálogo de productos, carrito de la compra y proceso de pago para vender ropa por internet",
+    "answer": "El proyecto contempla el desarrollo de una tienda online para la venta de ropa, que incluye componentes como catálogo de productos, carrito de compras y proceso de checkout. La estimación de horas se basa en proyectos similares realizados previamente, ajustando las horas estimadas según la complejidad y características específicas mencionadas en los contextos obtenidos.\n\n- Catálogo de productos: 220 h. El servicio de catálogo de productos se ha basado en el componente similar descrito en el chunk_id: 8 que abarca un catálogo headless con gestión de variantes y búsqueda de texto completo, ajustando la complejidad a 'alta' que es pertinente para este proyecto. [fuentes: 8]\n- Carrito de la compra y proceso de checkout: 180 h. Para el carrito de compras y proceso de checkout se toma como referencia el chunk_id: 9, que detalla un carrito persistente y un flujo de checkout en tres pasos, lo cual es relevante para el presente proyecto. [fuentes: 9]\n\nTotal: 400 horas.",
+    "contexts": [
+      "[Project: Plataforma de comercio electrónico headless para una cadena de moda con catálogo multi-idioma]\n[Client sector: ecommerce | Year: 2024 | Main tech: nodejs]\n\nComponent: Servicio de catálogo de productos\nDescription: Catálogo headless con gestión de variantes por talla y color, sincronización de inventario contra el ERP y búsqueda de texto completo sobre atributos de producto.\nTech stack: nodejs, postgresql, elasticsearch\nComplexity: high\nEstimated hours: 220.0",
+      "[Project: Plataforma de comercio electrónico headless para una cadena de moda con catálogo multi-idioma]\n[Client sector: ecommerce | Year: 2024 | Main tech: nodejs]\n\nComponent: Carrito de la compra y proceso de checkout\nDescription: Carrito persistente entre dispositivos, cálculo de impuestos por país, gestión de cupones de descuento y flujo de checkout en tres pasos.\nTech stack: nodejs, postgresql, redis\nComplexity: high\nEstimated hours: 180.0",
+      "[Project: E-commerce platform migration from Magento to a headless architecture]\n[Client sector: ecommerce | Year: 2024 | Main tech: nodejs]\n\nComponent: Product catalog service\nDescription: Headless product catalog with variant management, inventory sync, and full-text search over product attributes.\nTech stack: nodejs, postgresql, elasticsearch\nComplexity: medium\nEstimated hours: 200.0",
+      "[Project: Plataforma de comercio electrónico headless para una cadena de moda con catálogo multi-idioma]\n[Client sector: ecommerce | Year: 2024 | Main tech: nodejs]\n\nComponent: Escaparate web de cliente\nDescription: Frontend de tienda renderizado en servidor con páginas de producto optimizadas para SEO, navegación por facetas y diseño adaptable a móvil.\nTech stack: nextjs, react\nComplexity: high\nEstimated hours: 280.0",
+      "[Project: Migración de una tienda online desde Magento a una arquitectura desacoplada]\n[Client sector: ecommerce | Year: 2023 | Main tech: nodejs]\n\nComponent: Capa de API de comercio\nDescription: API REST que expone catálogo, carrito y pedidos al nuevo frontend, manteniendo compatibilidad temporal con los plugins heredados de Magento.\nTech stack: nodejs, postgresql\nComplexity: medium\nEstimated hours: 200.0"
+    ],
+    "ground_truth": "Tienda online completa a partir de presupuestos de e-commerce históricos. Servicio de catálogo de productos: 220 h (chunk 8). Carrito de la compra y proceso de checkout: 180 h (chunk 9). Integración de pasarela de pago: 140 h (chunk 10). Escaparate web de cliente: 280 h (chunk 11). Capa de API de comercio: 200 h (chunk 16). Total aproximado: 1.020 h. El presupuesto en inglés de catálogo (chunk 4, 200 h) confirma el orden de magnitud del catálogo. No hay datos de logística ni de gestión de devoluciones, así que esas piezas quedan sin soporte.",
+    "retrieved_chunk_ids": [
+      "11",
+      "16",
+      "4",
+      "8",
+      "9"
+    ],
+    "citations": {
+      "lines": 2,
+      "grounded": 2,
+      "dangling": 0,
+      "insufficient_context": 0,
+      "grounding_rate": 1.0,
+      "is_valid": true
+    },
+    "lines": [
+      {
+        "component": "Catálogo de productos",
+        "status": "grounded",
+        "cited": [
+          "8"
+        ],
+        "dangling": []
+      },
+      {
+        "component": "Carrito de la compra y proceso de checkout",
+        "status": "grounded",
+        "cited": [
+          "9"
+        ],
+        "dangling": []
+      }
+    ],
+    "total_hours": 400.0,
+    "ground_truth_hours": 1020,
+    "metrics": {
+      "faithfulness": 0.8181818181818182,
+      "answer_relevancy": 0.5832470488756801,
+      "context_precision": 0.99999999998,
+      "context_recall": 0.4444444444444444
+    }
+  },
+  {
+    "query_id": "Q2",
+    "question": "Queremos un buscador con filtros por precio y valoración sobre un catálogo grande, que responda rápido",
+    "answer": "Para el proyecto de un buscador con filtros por precio y valoración sobre un catálogo grande, se encontró un componente similar en el contexto proporcionado. Se utiliza un buscador de productos con facetas de un marketplace multivendedor que coincide en la descripción y tecnologías involucradas. Sin embargo, no se encontraron otras referencias para componentes adicionales o requerimientos específicos como \"que responda rápido\", más allá de las ya mencionadas características de búsqueda de texto completo con filtros. El contexto no brinda información suficiente para componentes adicionales solicitados.\n\n- Buscador de productos con filtros por precio y valoración: 180 h. El proyecto de marketplaces multivendedor con buscador de productos con facetas coincide en requerimientos de búsqueda compleja y filtrada, usando tecnologías similares a las mencionadas. [fuentes: 14]\n\nTotal: 180 horas.",
+    "contexts": [
+      "[Project: Marketplace multivendedor con panel de vendedores y liquidación automática de comisiones]\n[Client sector: ecommerce | Year: 2024 | Main tech: python_django]\n\nComponent: Buscador de productos con facetas\nDescription: Búsqueda de texto completo sobre el catálogo agregado de todos los vendedores, con filtros por precio, valoración y tiempo de entrega.\nTech stack: python_django, elasticsearch\nComplexity: medium\nEstimated hours: 180.0",
+      "[Project: Buscador y motor de reservas de vuelos y hoteles]\n[Client sector: travel | Year: 2024 | Main tech: java_spring]\n\nComponent: Buscador de disponibilidad y precios\nDescription: Consulta simultánea a proveedores externos de vuelo y alojamiento, con normalización de resultados y caché de precios de corta duración.\nTech stack: java_spring, redis, postgresql\nComplexity: high\nEstimated hours: 280.0",
+      "[Project: Plataforma de comercio electrónico headless para una cadena de moda con catálogo multi-idioma]\n[Client sector: ecommerce | Year: 2024 | Main tech: nodejs]\n\nComponent: Servicio de catálogo de productos\nDescription: Catálogo headless con gestión de variantes por talla y color, sincronización de inventario contra el ERP y búsqueda de texto completo sobre atributos de producto.\nTech stack: nodejs, postgresql, elasticsearch\nComplexity: high\nEstimated hours: 220.0",
+      "[Project: Buscador y motor de reservas de vuelos y hoteles]\n[Client sector: travel | Year: 2024 | Main tech: java_spring]\n\nComponent: Comparador de tarifas y alertas\nDescription: Seguimiento del precio de rutas favoritas del usuario y aviso por correo cuando la tarifa baja del umbral configurado.\nTech stack: java_spring, postgresql\nComplexity: medium\nEstimated hours: 160.0",
+      "[Project: E-commerce platform migration from Magento to a headless architecture]\n[Client sector: ecommerce | Year: 2024 | Main tech: nodejs]\n\nComponent: Product catalog service\nDescription: Headless product catalog with variant management, inventory sync, and full-text search over product attributes.\nTech stack: nodejs, postgresql, elasticsearch\nComplexity: medium\nEstimated hours: 200.0"
+    ],
+    "ground_truth": "Buscador con facetas sobre un catálogo grande. Buscador de productos con facetas: 180 h (chunk 14), que es el componente directamente equivalente y cubre filtros por atributo. Servicio de catálogo de productos: 220 h (chunk 8) como fuente indexable. El buscador de disponibilidad y precios (chunk 45, 280 h) es de viajes y sirve sólo como referencia de un buscador con filtros de precio y baja latencia. Total aproximado para buscador más indexación de catálogo: 400 h. El requisito de 'responder rápido' no tiene un componente de rendimiento presupuestado por separado en el corpus.",
+    "retrieved_chunk_ids": [
+      "14",
+      "4",
+      "45",
+      "47",
+      "8"
+    ],
+    "citations": {
+      "lines": 1,
+      "grounded": 1,
+      "dangling": 0,
+      "insufficient_context": 0,
+      "grounding_rate": 1.0,
+      "is_valid": true
+    },
+    "lines": [
+      {
+        "component": "Buscador de productos con filtros por precio y valoración",
+        "status": "grounded",
+        "cited": [
+          "14"
+        ],
+        "dangling": []
+      }
+    ],
+    "total_hours": 180.0,
+    "ground_truth_hours": 400,
+    "metrics": {
+      "faithfulness": 0.75,
+      "answer_relevancy": 0.0,
+      "context_precision": 0.99999999998,
+      "context_recall": 0.8333333333333334
+    }
+  },
+  {
+    "query_id": "Q3",
+    "question": "Hay que implementar login con OAuth 2.0, autenticación de doble factor y cumplir la normativa de protección de datos",
+    "answer": "El proyecto propuesto consiste en implementar un sistema de login utilizando OAuth 2.0, autenticación de doble factor y cumplimiento con la normativa de protección de datos. Se han encontrado datos suficientes para estimar las horas del componente de OAuth 2.0. Sin embargo, no hay datos suficientes para las otras componentes requeridas como autenticación de doble factor y protección de datos adicionales fuera de la normativa PSD2.\n\n- Login con OAuth 2.0: 120 h. El proyecto de API de banca móvil con autenticación OAuth 2.0 proporciona una estimación de horas relevante. A pesar de diferir en la tecnología, el alcance y la complejidad son comparables, con flujos OAuth 2.0 completos y manejo de sesiones con JWT. Se mantiene la misma estimación horaria de 120 horas. [fuentes: 2]\n- Autenticación de doble factor: sin datos suficientes. No se dispone del contexto necesario para estimar las horas para la autenticación de doble factor. Los chunk_id disponibles no mencionan este componente específico.\n- Cumplimiento con la normativa de protección de datos: sin datos suficientes. Aunque hay documentación sobre cumplimientos normativos PSD2, no hay información específica sobre la normativa general de protección de datos que se requiere en este caso. Por lo tanto, no se puede proporcionar una estimación horaria.\n\nTotal: 120 horas.",
+    "contexts": [
+      "[Project: API de banca abierta conforme a PSD2 con autenticación reforzada]\n[Client sector: finance | Year: 2024 | Main tech: java_spring]\n\nComponent: Servidor de autorización OAuth 2.0\nDescription: Implementación de los flujos de código de autorización y refresco de token, con sesiones basadas en JWT y limitación de peticiones por cliente.\nTech stack: java_spring, postgresql, redis\nComplexity: high\nEstimated hours: 200.0",
+      "[Project: Mobile banking API with OAuth 2.0 authentication and PSD2 compliance]\n[Client sector: finance | Year: 2024 | Main tech: ruby_on_rails]\n\nComponent: OAuth 2.0 authentication backend\nDescription: Implementation of OAuth 2.0 flows (authorization code, refresh token) with JWT-based session management, multi-tenant token isolation, and rate limiting per client.\nTech stack: ruby_on_rails, postgresql, redis\nComplexity: high\nEstimated hours: 120.0",
+      "[Project: API de banca abierta conforme a PSD2 con autenticación reforzada]\n[Client sector: finance | Year: 2024 | Main tech: java_spring]\n\nComponent: Módulo de cumplimiento PSD2\nDescription: Flujos de autenticación reforzada de cliente y gestión de consentimientos exigidos por la normativa PSD2 en la Unión Europea.\nTech stack: java_spring, postgresql\nComplexity: high\nEstimated hours: 240.0",
+      "[Project: Test project for OAuth backend]\n[Client sector: finance | Year: 2024 | Main tech: python]\n\nComponent: OAuth backend\nDescription: OAuth 2.0 authentication backend\nTech stack: python, fastapi\nComplexity: medium\nEstimated hours: 40.0",
+      "[Project: API de banca abierta conforme a PSD2 con autenticación reforzada]\n[Client sector: finance | Year: 2024 | Main tech: java_spring]\n\nComponent: Agregación de información de cuentas\nDescription: Servicio que consolida saldos y movimientos de varias entidades bancarias mediante conectores normalizados y caché de corta duración.\nTech stack: java_spring, postgresql, redis\nComplexity: high\nEstimated hours: 220.0"
+    ],
+    "ground_truth": "Autenticación, doble factor y cumplimiento normativo. Servidor de autorización OAuth 2.0: 200 h (chunk 20), con el backend OAuth 2.0 en inglés (chunk 2, 120 h) como segunda referencia. Verificación de identidad del usuario: 180 h (chunk 18) e identificación con certificado digital: 240 h (chunk 61) cubren el segundo factor. Cumplimiento: módulo PSD2 240 h (chunk 21) o su equivalente en inglés (chunk 3, 160 h); el servicio de auditoría HIPAA (chunk 6, 100 h) aporta la parte de trazabilidad exigible en protección de datos. Total aproximado: 620-860 h según se exija PSD2 o sólo RGPD. El corpus no contiene un componente específico de RGPD.",
+    "retrieved_chunk_ids": [
+      "1",
+      "2",
+      "20",
+      "21",
+      "22"
+    ],
+    "citations": {
+      "lines": 3,
+      "grounded": 1,
+      "dangling": 0,
+      "insufficient_context": 2,
+      "grounding_rate": 0.333,
+      "is_valid": true
+    },
+    "lines": [
+      {
+        "component": "Login con OAuth 2.0",
+        "status": "grounded",
+        "cited": [
+          "2"
+        ],
+        "dangling": []
+      },
+      {
+        "component": "Autenticación de doble factor",
+        "status": "insufficient_context",
+        "cited": [],
+        "dangling": []
+      },
+      {
+        "component": "Cumplimiento con la normativa de protección de datos",
+        "status": "insufficient_context",
+        "cited": [],
+        "dangling": []
+      }
+    ],
+    "total_hours": 120.0,
+    "ground_truth_hours": 720,
+    "metrics": {
+      "faithfulness": 0.6875,
+      "answer_relevancy": 0.0,
+      "context_precision": 0.99999999998,
+      "context_recall": 0.3333333333333333
+    }
+  },
+  {
+    "query_id": "Q4",
+    "question": "Queremos una app móvil donde los usuarios reserven cita y reciban avisos, con agenda y recordatorios automáticos",
+    "answer": "El proyecto consiste en desarrollar una aplicación móvil que permita la reserva de citas y envíe recordatorios automáticos a los usuarios. Se han identificado algunos componentes relevantes en los documentos recuperados, que servirán como base para elaborar la estimación del proyecto.\n\n- Reserva de citas con agenda y lista de espera: 220 h. El sistema de cita previa descrito en el documento 11 es muy similar al componente requerido. Ambos incluyen la gestión de agendas médicas, lista de espera automática y recordatorios por SMS y correo, por lo tanto, se utiliza este como base para la estimación. [fuentes: 25]\n- Recordatorios automáticos por notificación en app: 180 h. El componente de reserva de clases dirigidas en el documento 28 incluye la capacidad de enviar notificaciones, lo cual es relevante para la función de recordatorios automáticos solicitada en la app. La estimación de horas es similar y así es atribuida. [fuentes: 68]\n\nTotal: 400 horas.",
+    "contexts": [
+      "[Project: Portal del paciente con cita previa e historia clínica electrónica]\n[Client sector: healthcare | Year: 2024 | Main tech: python_django]\n\nComponent: Sistema de cita previa\nDescription: Reserva de citas por especialidad con gestión de agendas médicas, lista de espera automática y recordatorios por SMS y correo.\nTech stack: python_django, postgresql, celery\nComplexity: high\nEstimated hours: 220.0",
+      "[Project: Aplicación móvil de gimnasio con reserva de clases y control de acceso]\n[Client sector: hospitality | Year: 2023 | Main tech: react_native]\n\nComponent: Reserva de clases dirigidas\nDescription: Calendario de clases con plazas limitadas, lista de espera y cancelación con penalización por ausencia reiterada.\nTech stack: react_native, nodejs, postgresql\nComplexity: medium\nEstimated hours: 180.0",
+      "[Project: Portal de cita para campañas de vacunación autonómicas]\n[Client sector: publicsector | Year: 2023 | Main tech: python_django]\n\nComponent: Asignación masiva de citas por franja\nDescription: Reparto de citas por grupo de edad y punto de vacunación, con capacidad configurable por franja horaria y reasignación automática.\nTech stack: python_django, postgresql, celery\nComplexity: high\nEstimated hours: 220.0",
+      "[Project: Buscador y motor de reservas de vuelos y hoteles]\n[Client sector: travel | Year: 2024 | Main tech: java_spring]\n\nComponent: Motor de reservas y emisión\nDescription: Confirmación de reserva contra el proveedor, emisión de localizador y gestión de cancelaciones dentro del plazo permitido.\nTech stack: java_spring, postgresql\nComplexity: high\nEstimated hours: 240.0",
+      "[Project: Aplicación móvil de gimnasio con reserva de clases y control de acceso]\n[Client sector: hospitality | Year: 2023 | Main tech: react_native]\n\nComponent: Control de acceso por código QR\nDescription: Generación de código de acceso rotativo en la aplicación y validación en el torno de entrada del centro deportivo.\nTech stack: react_native, nodejs\nComplexity: medium\nEstimated hours: 140.0"
+    ],
+    "ground_truth": "App móvil de reserva de cita con avisos y agenda. Sistema de cita previa: 220 h (chunk 25) es el componente central. Asignación masiva de citas por franja: 220 h (chunk 64) cubre la agenda y la gestión de franjas horarias. Reserva de clases dirigidas: 180 h (chunk 68) y motor de reservas y emisión: 240 h (chunk 46) son referencias de flujo de reserva. Total aproximado para cita previa más agenda: 440 h. Los recordatorios automáticos y las notificaciones push no aparecen como componente presupuestado en el corpus: deberían marcarse sin datos suficientes.",
+    "retrieved_chunk_ids": [
+      "25",
+      "46",
+      "64",
+      "68",
+      "69"
+    ],
+    "citations": {
+      "lines": 2,
+      "grounded": 2,
+      "dangling": 0,
+      "insufficient_context": 0,
+      "grounding_rate": 1.0,
+      "is_valid": true
+    },
+    "lines": [
+      {
+        "component": "Reserva de citas con agenda y lista de espera",
+        "status": "grounded",
+        "cited": [
+          "25"
+        ],
+        "dangling": []
+      },
+      {
+        "component": "Recordatorios automáticos por notificación en app",
+        "status": "grounded",
+        "cited": [
+          "68"
+        ],
+        "dangling": []
+      }
+    ],
+    "total_hours": 400.0,
+    "ground_truth_hours": 440,
+    "metrics": {
+      "faithfulness": 0.3125,
+      "answer_relevancy": 0.45026559737374244,
+      "context_precision": 0.99999999998,
+      "context_recall": 0.6666666666666666
+    }
+  },
+  {
+    "query_id": "Q5",
+    "question": "Necesitamos un panel que reciba datos de sensores en tiempo real y avise cuando algo va mal en la instalación",
+    "answer": "Este proyecto requiere dos componentes basado en las especificaciones dadas: un sistema para la recolección de datos de sensores en tiempo real y un sistema de alertas para identificar problemas en las instalaciones. Para el panel de monitoreo de sensores en tiempo real, se puede utilizar como referencia el componente similar del Sistema de Mantenimiento Predictivo, mientras que para el sistema de alertas, encontramos una aproximación en el proyecto de Plataforma de Monitoreo de Instalaciones Solares Fotovoltaicas. Sin embargo, hay diferencias en los criterios de complejidad que se deben tener en cuenta al hacer los ajustes y estimaciones necesarios.\n\n- Panel de monitoreo de sensores en tiempo real: 240 h. Las características de este componente son similares a las de 'Recogida de datos de sensores de planta', que implica la lectura continua de datos de sensores y almacenamiento. Las tecnologías y el nivel de complejidad también son comparables, justificado bajo la misma estimación de horas. [fuentes: 56]\n- Sistema de alertas para fallos en la instalación: 160 h. El componente de 'Alertas de bajo rendimiento' en el contexto de los sistemas de energía es una aproximación cercana, ya que ambos sistemas necesitan identificar y notificar situaciones anómalas. Se estima con base en un componente de alta complejidad similar. [fuentes: 55]\n\nTotal: 400 horas.",
+    "contexts": [
+      "[Project: Plataforma de monitorización de instalaciones solares fotovoltaicas]\n[Client sector: energy | Year: 2024 | Main tech: python_django]\n\nComponent: Panel de producción y ahorro\nDescription: Visualización de producción diaria y acumulada frente al consumo, con estimación de ahorro económico y huella evitada.\nTech stack: react, python_django\nComplexity: medium\nEstimated hours: 200.0",
+      "[Project: Plataforma de monitorización de instalaciones solares fotovoltaicas]\n[Client sector: energy | Year: 2024 | Main tech: python_django]\n\nComponent: Alertas de bajo rendimiento\nDescription: Detección de caídas de producción frente al histórico esperado y aviso al servicio de mantenimiento con diagnóstico preliminar.\nTech stack: python_django, celery\nComplexity: high\nEstimated hours: 160.0",
+      "[Project: Aplicación móvil de pagos entre particulares con verificación de identidad]\n[Client sector: finance | Year: 2024 | Main tech: ruby_on_rails]\n\nComponent: Detección de fraude en tiempo real\nDescription: Sistema de reglas que puntúa cada transacción según dispositivo, geolocalización y patrón histórico de gasto, bloqueando operaciones sospechosas.\nTech stack: ruby_on_rails, postgresql, redis\nComplexity: high\nEstimated hours: 160.0",
+      "[Project: Sistema de mantenimiento predictivo para maquinaria de planta]\n[Client sector: industrial | Year: 2023 | Main tech: python_django]\n\nComponent: Recogida de datos de sensores de planta\nDescription: Lectura continua de vibración y temperatura desde autómatas industriales, con almacenamiento de series temporales.\nTech stack: python_django, postgresql\nComplexity: high\nEstimated hours: 240.0",
+      "[Project: Plataforma de gestión de flota con optimización de rutas de reparto]\n[Client sector: logistics | Year: 2024 | Main tech: python_django]\n\nComponent: Seguimiento de vehículos en tiempo real\nDescription: Ingesta de posiciones GPS de la flota, visualización en mapa y alertas por desvío de ruta o parada no planificada.\nTech stack: python_django, postgresql, redis\nComplexity: high\nEstimated hours: 200.0"
+    ],
+    "ground_truth": "Panel de telemetría en tiempo real con alertas. Ingesta: recogida de datos de sensores de planta 240 h (chunk 56) o ingesta de telemetría de inversores 260 h (chunk 53). Panel de producción y ahorro: 200 h (chunk 54) para la visualización. Alertas de bajo rendimiento: 160 h (chunk 55) para el aviso cuando algo va mal. Total aproximado: 600-620 h. El cálculo de eficiencia de línea (chunk 59, 220 h) y el modelo de predicción de averías (chunk 57, 220 h) son ampliaciones analíticas que el enunciado no pide; el seguimiento de vehículos (chunk 31) es de otro dominio.",
+    "retrieved_chunk_ids": [
+      "19",
+      "31",
+      "54",
+      "55",
+      "56"
+    ],
+    "citations": {
+      "lines": 2,
+      "grounded": 2,
+      "dangling": 0,
+      "insufficient_context": 0,
+      "grounding_rate": 1.0,
+      "is_valid": true
+    },
+    "lines": [
+      {
+        "component": "Panel de monitoreo de sensores en tiempo real",
+        "status": "grounded",
+        "cited": [
+          "56"
+        ],
+        "dangling": []
+      },
+      {
+        "component": "Sistema de alertas para fallos en la instalación",
+        "status": "grounded",
+        "cited": [
+          "55"
+        ],
+        "dangling": []
+      }
+    ],
+    "total_hours": 400.0,
+    "ground_truth_hours": 610,
+    "metrics": {
+      "faithfulness": 0.6875,
+      "answer_relevancy": 0.19756792486589406,
+      "context_precision": 0.9166666666361111,
+      "context_recall": 0.5714285714285714
+    }
+  }
+]
