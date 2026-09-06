@@ -243,4 +243,30 @@ milisegundos, y este es exactamente el baseline contra el que la sesion en
 vivo medira el impacto de HNSW/IVFFlat. Añadirlo ahora eliminaria ese punto
 de comparacion.
 
+## Sesión 12: agente de estimación
+
+El agente manual está en `app/agent/`. Usa la Responses API para decidir qué componente buscar,
+ejecuta `search_budgets` sobre el retrieval híbrido con reranking y calcula el resultado con una
+función determinista. El bucle conserva cada `call_id`, devuelve los `function_call_output` y se
+detiene cuando recibe la estimación estructurada o alcanza el máximo de iteraciones.
+
+Prueba rápida con `gpt-5-mini` y el stub local:
+
+```bash
+uv run python scripts/run_agent_s12.py \
+  exercises/session-12/sample_transcript_simple.txt \
+  --model gpt-5-mini --effort minimal --stub
+```
+
+Ejecución completa con `gpt-5`, reasoning `medium` y el retrieval real:
+
+```bash
+uv run python scripts/run_agent_s12.py \
+  exercises/session-12/sample_transcript_complex.txt \
+  --model gpt-5 --effort medium \
+  --output exercises/session-12/trace_complex.txt
+```
+
+La traza entregada está en `exercises/session-12/trace_complex.txt`.
+
 > Este proyecto forma parte del **Master en AI Engineering** y servira como base para evolucionar hacia una arquitectura RAG con base de datos vectorial en modulos posteriores.

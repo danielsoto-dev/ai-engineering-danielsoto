@@ -138,3 +138,27 @@ async def test_agent_stops_at_max_iterations() -> None:
     assert result.stop_reason == "max_iterations"
     assert result.iterations == 3
     assert result.estimate is None
+
+
+async def test_non_object_tool_arguments_become_an_observation() -> None:
+    outputs = [
+        [
+            SimpleNamespace(
+                type="function_call",
+                name="search_budgets",
+                call_id="bad_arguments",
+                arguments="[]",
+            )
+        ],
+        [SimpleNamespace(type="message")],
+    ]
+    responses = FakeResponses(outputs, _final_output())
+    result = await run_estimation_agent(
+        "A backend",
+        client=FakeClient(responses),
+        retrieval_backend=fake_retrieval,
+    )
+
+    assert result.stop_reason == "completed"
+    assert "JSON object" in result.trace.steps[0].observation
+    assert result.trace.steps[0].arguments == {}

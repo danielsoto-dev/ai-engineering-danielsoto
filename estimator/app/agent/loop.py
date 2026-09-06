@@ -142,9 +142,10 @@ async def run_estimation_agent(
         for call in calls:
             arguments: dict[str, Any] = {}
             try:
-                arguments = json.loads(call.arguments)
-                if not isinstance(arguments, dict):
+                decoded_arguments = json.loads(call.arguments)
+                if not isinstance(decoded_arguments, dict):
                     raise ValueError("tool arguments must be a JSON object")
+                arguments = decoded_arguments
                 result = await dispatch_tool(
                     call.name,
                     arguments,
