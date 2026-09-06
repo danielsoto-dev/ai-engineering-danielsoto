@@ -8,12 +8,14 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 import structlog
+from openai import OpenAI
 
 from app.agent.schemas import (
     CalculateEstimateArgs,
     HistoricalBudgetItem,
     SearchBudgetsArgs,
 )
+from app.config import get_settings
 from app.db.session import get_sessionmaker
 from app.embedding_pipeline.embedder import OpenAIEmbedder
 from app.retrieval.context import assemble_context
@@ -141,7 +143,10 @@ async def retrieve_historical_budgets(args: SearchBudgetsArgs) -> list[Historica
     if args.filters and args.filters.component_type:
         query = f"{query}. Component type: {args.filters.component_type}"
 
-    embedder = OpenAIEmbedder()
+    settings = get_settings()
+    if not settings.OPENAI_API_KEY:
+        raise RuntimeError("OPENAI_API_KEY is required for budget retrieval")
+    embedder = OpenAIEmbedder(client=OpenAI(api_key=settings.OPENAI_API_KEY))
     query_vector = await asyncio.to_thread(embedder.embed_one, query)
     sessionmaker = get_sessionmaker()
     async with sessionmaker() as session:
