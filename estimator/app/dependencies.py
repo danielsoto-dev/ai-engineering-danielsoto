@@ -6,7 +6,7 @@ from functools import lru_cache
 
 import redis
 import structlog
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 
 from app.cache.semantic import EstimationSemanticCache
 from app.config import get_settings
@@ -47,6 +47,15 @@ def get_openai_client() -> OpenAI | None:
     if not settings.OPENAI_API_KEY:
         return None
     return OpenAI(api_key=settings.OPENAI_API_KEY)
+
+
+@lru_cache
+def get_agent_openai_client() -> AsyncOpenAI | None:
+    """Async client used by the Session 12 Responses API agent."""
+    settings = get_settings()
+    if not settings.OPENAI_API_KEY:
+        return None
+    return AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 @lru_cache
