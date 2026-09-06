@@ -14,6 +14,7 @@ API), so the UI works against local uvicorn or docker-compose.
 
 from __future__ import annotations
 
+import json
 import os
 
 import httpx
@@ -88,7 +89,9 @@ with st.sidebar:
     c1, c2 = st.columns(2)
     c1.metric("Messages", info.get("message_count", 0))
     c2.metric("Anchors", info.get("anchors_count", 0))
-    st.caption(f"Summary chars: {info.get('summary_chars', 0)} · Tier: {info.get('last_resolved_tier') or '—'}")
+    st.caption(
+        f"Summary chars: {info.get('summary_chars', 0)} · Tier: {info.get('last_resolved_tier') or '—'}"
+    )
 
     last = info.get("last_turn")
     if last:
@@ -127,14 +130,67 @@ def _render_result(result: dict, acb: dict | None) -> None:
                     st.markdown(f"- {issue}")
 
 
-for user_text, result, acb in st.session_state.get("turns", []):
+def _render_agent_result(body: dict) -> None:
+    estimate = body.get("estimate")
+    if estimate is None:
+        st.warning(f"Agent stopped without an estimate: {body.get('stop_reason', 'unknown')}")
+        return
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total hours", estimate["total_hours"])
+    col2.metric("Components", len(estimate["components"]))
+    col3.metric("Iterations", body["iterations"])
+    st.caption(f"Confidence: {estimate['confidence']} · Stop reason: {body['stop_reason']}")
+
+    rows = [
+        {
+            "Component": component["name"],
+            "Hours": component["estimated_hours"],
+            "Reference chunks": ", ".join(
+                str(chunk_id) for chunk_id in component["reference_chunk_ids"]
+            ),
+            "Rationale": component["rationale"],
+        }
+        for component in estimate["components"]
+    ]
+    st.table(rows)
+
+    if estimate["assumptions"]:
+        st.markdown("**Assumptions**")
+        for assumption in estimate["assumptions"]:
+            st.markdown(f"- {assumption}")
+
+    steps = body.get("trace", {}).get("steps", [])
+    with st.expander(f"Agent tool trace ({len(steps)} calls)"):
+        if not steps:
+            st.caption("No tools were called.")
+        for step in steps:
+            st.markdown(f"**Step {step['step']}: `{step['action']}`**")
+            st.write(step["reasoning"])
+            st.code(json.dumps(step["arguments"], indent=2), language="json")
+            st.caption(f"Observation: {step['observation']}")
+
+
+for turn in st.session_state.get("turns", []):
+    user_text, result, acb, *mode_flag = turn
+    is_agent = bool(mode_flag and mode_flag[0])
     with st.chat_message("user"):
         st.write(user_text)
     with st.chat_message("assistant"):
-        _render_result(result, acb)
+        if is_agent:
+            _render_agent_result(result)
+        else:
+            _render_result(result, acb)
 
 
 # --- input form --------------------------------------------------------------
+
+mode = st.radio(
+    "Estimation mode",
+    ["Conversational", "Session 12 agent"],
+    horizontal=True,
+)
+use_agent = mode == "Session 12 agent"
 
 with st.form("turn_form", clear_on_submit=True):
     transcript = st.text_area(
@@ -143,13 +199,18 @@ with st.form("turn_form", clear_on_submit=True):
         placeholder="Each message is a turn — the service remembers the previous ones.",
         help="Between 20 and 80000 characters.",
     )
-    col_a, col_b, col_c = st.columns(3)
-    project_type = col_a.selectbox("Project type", [t.value for t in ProjectType], index=1)
-    detail_level = col_b.selectbox("Detail", [d.value for d in DetailLevel], index=1)
-    output_format = col_c.selectbox("Format", [f.value for f in OutputFormat], index=0)
-
-    attachment = st.file_uploader("Attachment (optional)", type=["pdf", "docx"])
-    use_acb = st.toggle("Use Actor-Critic-Boss (slower, higher quality)", value=False)
+    if use_agent:
+        st.caption("The agent searches historical budgets and calculates the result in hours.")
+        attachment = None
+        use_acb = False
+        project_type = detail_level = output_format = None
+    else:
+        col_a, col_b, col_c = st.columns(3)
+        project_type = col_a.selectbox("Project type", [t.value for t in ProjectType], index=1)
+        detail_level = col_b.selectbox("Detail", [d.value for d in DetailLevel], index=1)
+        output_format = col_c.selectbox("Format", [f.value for f in OutputFormat], index=0)
+        attachment = st.file_uploader("Attachment (optional)", type=["pdf", "docx"])
+        use_acb = st.toggle("Use Actor-Critic-Boss (slower, higher quality)", value=False)
     submitted = st.form_submit_button("Send turn", type="primary")
 
 
@@ -157,23 +218,31 @@ if submitted:
     if len(transcript.strip()) < 20:
         st.error("The description must be at least 20 characters long.")
     else:
-        endpoint = f"{SESSIONS_URL}/{sid}/estimate-acb" if use_acb else f"{SESSIONS_URL}/{sid}/estimate"
-        data = {
-            "transcript": transcript.strip(),
-            "project_type": project_type,
-            "detail_level": detail_level,
-            "output_format": output_format,
-        }
-        files = None
-        if attachment is not None:
-            files = {"attachments": (attachment.name, attachment.getvalue(), attachment.type)}
+        if use_agent:
+            endpoint = f"{API_BASE_URL.rstrip('/')}/api/v1/agent/estimate"
+            request_options = {"json": {"transcript": transcript.strip()}}
+        else:
+            endpoint = (
+                f"{SESSIONS_URL}/{sid}/estimate-acb"
+                if use_acb
+                else f"{SESSIONS_URL}/{sid}/estimate"
+            )
+            data = {
+                "transcript": transcript.strip(),
+                "project_type": project_type,
+                "detail_level": detail_level,
+                "output_format": output_format,
+            }
+            files = None
+            if attachment is not None:
+                files = {"attachments": (attachment.name, attachment.getvalue(), attachment.type)}
+            request_options = {"data": data, "files": files}
 
         with st.spinner("Estimating…"):
             try:
                 resp = httpx.post(
                     endpoint,
-                    data=data,
-                    files=files,
+                    **request_options,
                     timeout=httpx.Timeout(180.0, connect=10.0),
                 )
                 resp.raise_for_status()
@@ -195,7 +264,10 @@ if submitted:
             except httpx.HTTPError as exc:
                 st.error(f"Could not reach the estimator at `{endpoint}`: {exc}")
             else:
-                st.session_state.turns.append(
-                    (transcript.strip(), body["result"], body.get("acb"))
-                )
+                if use_agent:
+                    st.session_state.turns.append((transcript.strip(), body, None, True))
+                else:
+                    st.session_state.turns.append(
+                        (transcript.strip(), body["result"], body.get("acb"), False)
+                    )
                 st.rerun()

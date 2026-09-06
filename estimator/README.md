@@ -269,4 +269,11 @@ uv run python scripts/run_agent_s12.py \
 
 La traza entregada está en `exercises/session-12/trace_complex.txt`.
 
+### Probar el agente desde la UI
+
+Con FastAPI y Streamlit en ejecución, abre `http://localhost:8501`, selecciona
+`Session 12 agent`, escribe la descripción del proyecto y pulsa `Send turn`.
+La UI llama a `POST /api/v1/agent/estimate` y muestra el desglose en horas,
+las referencias usadas, los supuestos y la traza completa de herramientas.
+
 > Este proyecto forma parte del **Master en AI Engineering** y servira como base para evolucionar hacia una arquitectura RAG con base de datos vectorial en modulos posteriores.
