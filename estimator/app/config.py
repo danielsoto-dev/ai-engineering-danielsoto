@@ -62,6 +62,11 @@ class Settings(BaseSettings):
     # Max iterations the Boss can drive (1 actor + 1 critic call each).
     BOSS_MAX_ITERATIONS: int = 3
 
+    # --- Session 12 fields (manual Responses API agent loop) ---
+    AGENT_MODEL: str = "gpt-5"
+    AGENT_REASONING_EFFORT: Literal["minimal", "low", "medium", "high"] = "medium"
+    AGENT_MAX_ITERATIONS: int = 12
+
     @model_validator(mode="after")
     def validate_at_least_one_api_key(self) -> "Settings":
         """LiteLLM may try either provider via fallback, so we require at least one key."""
