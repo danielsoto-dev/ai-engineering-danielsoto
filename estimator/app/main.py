@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 
 from app.config import get_settings  # noqa: E402
 from app.embedding_pipeline.router import router as embeddings_router  # noqa: E402
+from app.observability import configure_observability  # noqa: E402
 from app.routers import agent_estimations, estimations, grounded_estimations, sessions  # noqa: E402
 
 
@@ -71,6 +72,7 @@ app.include_router(grounded_estimations.router)
 app.include_router(agent_estimations.router)
 app.include_router(sessions.router)
 app.include_router(embeddings_router)
+configure_observability(app)
 
 
 @app.get("/health")

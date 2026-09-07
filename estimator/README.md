@@ -276,4 +276,33 @@ Con FastAPI y Streamlit en ejecución, abre `http://localhost:8501`, selecciona
 La UI llama a `POST /api/v1/agent/estimate` y muestra el desglose en horas,
 las referencias usadas, los supuestos y la traza completa de herramientas.
 
+## Sesión 13: orquestación con LangGraph
+
+El endpoint `POST /api/v1/agent/estimate` ejecuta ahora un grafo secuencial de cinco nodos:
+
+```text
+START → extract_requirements → classify_components → search_budgets
+      → generate_estimate → validate_and_consolidate → END
+```
+
+El estado compartido está tipado y usa reducers acumuladores para presupuestos, errores y traza.
+Cada ejecución genera un `estimation_id`, lo usa como `thread_id` de LangGraph y guarda un
+checkpoint después de cada paso en el PostgreSQL que ya contiene pgvector.
+
+Logfire crea un span por nodo e instrumenta FastAPI, HTTPX, asyncpg y Psycopg. Las trazas se ven
+en la consola local. Para publicarlas en Logfire, añade `LOGFIRE_TOKEN` a `.env`.
+
+Ejecución completa y archivo de traza:
+
+```bash
+uv run python scripts/run_graph_s13.py \
+  exercises/session-12/sample_transcript_complex.txt \
+  --model gpt-5 --effort medium \
+  --output exercises/session-13/trace_complex.txt
+```
+
+La respuesta conserva la estimación estructurada y añade `status`, `estimation_id`, `errors` y la
+traza de los cinco nodos. `status` vale `validated` cuando cada componente tiene referencias y los
+totales cuadran; de lo contrario la arista condicional termina con `needs_review`.
+
 > Este proyecto forma parte del **Master en AI Engineering** y servira como base para evolucionar hacia una arquitectura RAG con base de datos vectorial en modulos posteriores.

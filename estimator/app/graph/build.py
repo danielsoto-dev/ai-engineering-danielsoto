@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from langgraph.graph import END, START, StateGraph
 
 from app.graph.nodes import (
@@ -12,6 +14,12 @@ from app.graph.nodes import (
     validate_and_consolidate,
 )
 from app.graph.state import EstimationGraphContext, EstimationState
+
+
+def route_after_validation(
+    state: EstimationState,
+) -> Literal["validated", "needs_review"]:
+    return state["status"] or "needs_review"
 
 
 def build_estimation_graph(checkpointer=None):
@@ -27,5 +35,9 @@ def build_estimation_graph(checkpointer=None):
     builder.add_edge("classify_components", "search_budgets")
     builder.add_edge("search_budgets", "generate_estimate")
     builder.add_edge("generate_estimate", "validate_and_consolidate")
-    builder.add_edge("validate_and_consolidate", END)
+    builder.add_conditional_edges(
+        "validate_and_consolidate",
+        route_after_validation,
+        {"validated": END, "needs_review": END},
+    )
     return builder.compile(checkpointer=checkpointer)

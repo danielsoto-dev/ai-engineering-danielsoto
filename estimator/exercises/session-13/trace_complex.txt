@@ -1,0 +1,92 @@
+==============================================================================
+LANGGRAPH EXECUTION TRACE
+==============================================================================
+thread_id: c5232586-207b-4da5-83b7-e9fb0813953b
+status: validated
+
+SPAN 1: node: extract_requirements
+  reasoning: Turn the transcript into explicit requirements before grouping work.
+  arguments: {'transcript_chars': 2930}
+  observation: extracted 36 requirements
+
+SPAN 2: node: classify_components
+  reasoning: Group related requirements without hiding separate areas of work.
+  arguments: {'requirements': 36}
+  observation: classified 4 components
+
+SPAN 3: node: search_budgets
+  reasoning: Search each classified component sequentially against historical data.
+  arguments: {'queries': 4}
+  observation: found 20 matches; per component={'Backend de Negocio RUTA': 5, 'Integración SAP': 5, 'App Móvil Repartidores': 5, 'Panel de Analítica': 5}
+
+SPAN 4: node: generate_estimate
+  reasoning: Use only retrieved hours and the deterministic calculator.
+  arguments: {'budget_matches': 20}
+  observation: calculated 874.0h
+
+SPAN 5: node: validate_and_consolidate
+  reasoning: Reject totals without complete references or consistent arithmetic.
+  arguments: {'components': 4}
+  observation: status=validated; errors=0
+
+==============================================================================
+FINAL ESTIMATE
+==============================================================================
+{
+  "components": [
+    {
+      "name": "Backend de Negocio RUTA",
+      "estimated_hours": 230.0,
+      "reference_chunk_ids": [
+        30,
+        2,
+        32,
+        31,
+        16
+      ],
+      "rationale": "Median of 5 historical references plus 15% contingency."
+    },
+    {
+      "name": "Integración SAP",
+      "estimated_hours": 207.0,
+      "reference_chunk_ids": [
+        2,
+        3,
+        32,
+        17,
+        21
+      ],
+      "rationale": "Median of 5 historical references plus 15% contingency."
+    },
+    {
+      "name": "App Móvil Repartidores",
+      "estimated_hours": 230.0,
+      "reference_chunk_ids": [
+        32,
+        30,
+        20,
+        40,
+        31
+      ],
+      "rationale": "Median of 5 historical references plus 15% contingency."
+    },
+    {
+      "name": "Panel de Analítica",
+      "estimated_hours": 207.0,
+      "reference_chunk_ids": [
+        32,
+        31,
+        14,
+        47,
+        30
+      ],
+      "rationale": "Median of 5 historical references plus 15% contingency."
+    }
+  ],
+  "total_hours": 874.0,
+  "assumptions": [
+    "Historical engineer-hours are comparable to the requested scope.",
+    "The deterministic calculator adds a 15% contingency per component."
+  ],
+  "confidence": "high"
+}

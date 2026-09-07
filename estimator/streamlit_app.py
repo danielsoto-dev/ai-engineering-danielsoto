@@ -140,7 +140,13 @@ def _render_agent_result(body: dict) -> None:
     col1.metric("Total hours", estimate["total_hours"])
     col2.metric("Components", len(estimate["components"]))
     col3.metric("Iterations", body["iterations"])
-    st.caption(f"Confidence: {estimate['confidence']} · Stop reason: {body['stop_reason']}")
+    st.caption(
+        f"Status: {body.get('status', body['stop_reason'])} · "
+        f"Confidence: {estimate['confidence']} · ID: {body.get('estimation_id', 'legacy')}"
+    )
+
+    if body.get("errors"):
+        st.warning("\n".join(body["errors"]))
 
     rows = [
         {
