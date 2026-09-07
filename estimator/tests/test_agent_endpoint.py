@@ -2,43 +2,46 @@
 
 from __future__ import annotations
 
-import json
-from types import SimpleNamespace
-
 from fastapi.testclient import TestClient
 
-from app.dependencies import get_agent_openai_client
+from app.agent.schemas import AgentEstimate, AgentTrace, GraphEstimationResult
+from app.dependencies import get_agent_openai_client, get_estimation_graph_runner
 from app.main import app
 
 
-class _FakeResponses:
-    async def create(self, **kwargs):
-        estimate = {
-            "components": [
+class _FakeRunner:
+    async def run(self, *, transcript, estimation_id, context):
+        return GraphEstimationResult(
+            estimation_id=estimation_id,
+            estimate=AgentEstimate.model_validate(
                 {
-                    "name": "OAuth backend",
-                    "estimated_hours": 184,
-                    "reference_chunk_ids": [2, 3, 20],
-                    "rationale": "Historical median plus contingency.",
+                    "components": [
+                        {
+                            "name": "OAuth backend",
+                            "estimated_hours": 184,
+                            "reference_chunk_ids": [2, 3, 20],
+                            "rationale": "Historical median plus contingency.",
+                        }
+                    ],
+                    "total_hours": 184,
+                    "assumptions": ["Existing Rails application."],
+                    "confidence": "medium",
                 }
-            ],
-            "total_hours": 184,
-            "assumptions": ["Existing Rails application."],
-            "confidence": "medium",
-        }
-        return SimpleNamespace(
-            id="response_1",
-            output=[SimpleNamespace(type="message")],
-            output_text=json.dumps(estimate),
+            ),
+            status="validated",
+            errors=[],
+            trace=AgentTrace(),
+            iterations=5,
         )
 
 
 class _FakeClient:
-    responses = _FakeResponses()
+    pass
 
 
 def test_agent_endpoint_returns_estimate_and_trace() -> None:
     app.dependency_overrides[get_agent_openai_client] = lambda: _FakeClient()
+    app.dependency_overrides[get_estimation_graph_runner] = lambda: _FakeRunner()
     try:
         response = TestClient(app).post(
             "/api/v1/agent/estimate",
@@ -51,6 +54,8 @@ def test_agent_endpoint_returns_estimate_and_trace() -> None:
     body = response.json()
     assert body["estimate"]["total_hours"] == 184
     assert body["trace"]["steps"] == []
+    assert body["status"] == "validated"
+    assert body["estimation_id"]
     assert body["stop_reason"] == "completed"
 
 

@@ -10,6 +10,7 @@ from openai import AsyncOpenAI, OpenAI
 
 from app.cache.semantic import EstimationSemanticCache
 from app.config import get_settings
+from app.graph.runner import EstimationGraphRunner
 from app.services.cache import EstimationCache
 from app.services.estimation import EstimationService
 from app.services.grounded_estimation import GroundedEstimationService
@@ -56,6 +57,12 @@ def get_agent_openai_client() -> AsyncOpenAI | None:
     if not settings.OPENAI_API_KEY:
         return None
     return AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+
+
+@lru_cache
+def get_estimation_graph_runner() -> EstimationGraphRunner:
+    settings = get_settings()
+    return EstimationGraphRunner(database_url=settings.DATABASE_URL)
 
 
 @lru_cache

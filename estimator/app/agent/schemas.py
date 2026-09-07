@@ -97,3 +97,13 @@ class AgentRunResult(BaseModel):
     trace: AgentTrace
     iterations: int = Field(ge=1)
     stop_reason: Literal["completed", "max_iterations", "invalid_final_output"]
+
+
+class GraphEstimationResult(BaseModel):
+    estimation_id: str
+    estimate: AgentEstimate
+    status: Literal["validated", "needs_review"]
+    errors: list[str] = Field(default_factory=list)
+    trace: AgentTrace
+    iterations: int = Field(ge=1)
+    stop_reason: Literal["completed"] = "completed"
