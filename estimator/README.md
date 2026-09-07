@@ -272,7 +272,7 @@ La traza entregada está en `exercises/session-12/trace_complex.txt`.
 ### Probar el agente desde la UI
 
 Con FastAPI y Streamlit en ejecución, abre `http://localhost:8501`, selecciona
-`Session 12 agent`, escribe la descripción del proyecto y pulsa `Send turn`.
+`Session 13 LangGraph`, escribe la descripción del proyecto y pulsa `Send turn`.
 La UI llama a `POST /api/v1/agent/estimate` y muestra el desglose en horas,
 las referencias usadas, los supuestos y la traza completa de herramientas.
 

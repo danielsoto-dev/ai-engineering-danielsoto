@@ -193,10 +193,10 @@ for turn in st.session_state.get("turns", []):
 
 mode = st.radio(
     "Estimation mode",
-    ["Conversational", "Session 12 agent"],
+    ["Conversational", "Session 13 LangGraph"],
     horizontal=True,
 )
-use_agent = mode == "Session 12 agent"
+use_agent = mode == "Session 13 LangGraph"
 
 with st.form("turn_form", clear_on_submit=True):
     transcript = st.text_area(
